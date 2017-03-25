@@ -19,8 +19,9 @@ game.create = function () {
 };
 
 game.update = function () {
-  //logo.position.x += 0.9;
   logo.rotation = game.physics.arcade.moveToPointer(logo, 60, game.input.activePointer, 500);
-}
+
+};
+
 
 module.exports = game;
