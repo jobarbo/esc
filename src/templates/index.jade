@@ -8,7 +8,18 @@ html
     meta(property="og:description", content=properties.description)
 
     link(rel='stylesheet', href='style/index.css')
-
+      
+    style( type='text/css').
+      @import url(http://fonts.googleapis.com/css?family=Geo);
+      *{
+        margin:0;
+        padding:0;
+      }
+      .hiddenText{
+        font-family: Geo; 
+        visibility: hidden; 
+        height: 0;
+      }
     title=properties.title
 
     script(src="js/phaser.js")
@@ -17,7 +28,9 @@ html
     include analytics.jade
 
   body
+    p.hiddenText .
     #game
+
 
     if (!productionBuild)
       script.

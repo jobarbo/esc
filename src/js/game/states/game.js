@@ -1,6 +1,7 @@
 var game = {};
 var logo;
 
+
 game.create = function () {
 
   logo = this.game.add.sprite(this.game.world.centerX, this.game.world.centerY, 'logo');
@@ -20,7 +21,6 @@ game.create = function () {
 
 game.update = function () {
   logo.rotation = game.physics.arcade.moveToPointer(logo, 60, game.input.activePointer, 500);
-
 };
 
 
