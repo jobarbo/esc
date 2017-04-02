@@ -1,10 +1,14 @@
 var _ = require('lodash');
 var properties = require('./properties');
+var manager;
+var bounds;
+
 
 var states = {
   boot: require('./states/boot.js'),
   preloader: require('./states/preloader.js'),
   menu: require('./states/menu.js'),
+  levelSelector: require('./states/levelSelector.js'),
   level1: require('./states/level1.js')
 };
 

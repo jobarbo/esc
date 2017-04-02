@@ -10,13 +10,20 @@ html
     link(rel='stylesheet', href='style/index.css')
       
     style( type='text/css').
-      @import url(http://fonts.googleapis.com/css?family=Geo);
+      @import url('http://fonts.googleapis.com/css?family=Geo');
+      @font-face { font-family: 'pixel'; src: url('images/kenpixel_mini_square.woff') format("truetype"); /* Pretty Modern Browsers */ }
+      @font-face { font-family: 'pixelVector'; src: url('images/kenvector_future_thin.woff') format("truetype"); /* Pretty Modern Browsers */ }
       *{
         margin:0;
         padding:0;
       }
       .hiddenText{
-        font-family: Geo; 
+        font-family: pixel; 
+        visibility: hidden; 
+        height: 0;
+      }
+      .hiddenText2{
+        font-family: pixelVector; 
         visibility: hidden; 
         height: 0;
       }
@@ -29,6 +36,7 @@ html
 
   body
     p.hiddenText .
+    p.hiddenText2 .
     #game
 
 

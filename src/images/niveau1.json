@@ -50,15 +50,15 @@
          "name":"evenement",
          "objects":[
                 {
-                 "height":136.981891348089,
+                 "height":136.982,
                  "id":1,
                  "name":"exit",
                  "rotation":0,
                  "type":"exit",
                  "visible":true,
                  "width":72,
-                 "x":2307.55130784708,
-                 "y":491.58953722334
+                 "x":2307.55,
+                 "y":491.59
                 }, 
                 {
                  "height":145,
@@ -86,7 +86,7 @@
         {
          "columns":4,
          "firstgid":1,
-         "image":"collision.png",
+         "image":"..\/..\/..\/projet_spec\/assets\/collision.png",
          "imageheight":70,
          "imagewidth":280,
          "margin":0,
@@ -99,7 +99,7 @@
         {
          "columns":14,
          "firstgid":5,
-         "image":"platformerPack_industrial_tilesheet.png",
+         "image":"..\/..\/..\/projet_spec\/assets\/platformerPack_industrial_tilesheet.png",
          "imageheight":560,
          "imagewidth":980,
          "margin":0,
@@ -155,26 +155,13 @@
         {
          "columns":14,
          "firstgid":117,
-         "image":"request_sheet.png",
+         "image":"..\/..\/..\/projet_spec\/assets\/request_sheet.png",
          "imageheight":490,
          "imagewidth":980,
          "margin":0,
          "name":"request_sheet",
          "spacing":0,
          "tilecount":98,
-         "tileheight":70,
-         "tilewidth":70
-        }, 
-        {
-         "columns":12,
-         "firstgid":215,
-         "image":"basic_tilesheet.png",
-         "imageheight":936,
-         "imagewidth":914,
-         "margin":0,
-         "name":"basic_tilesheet",
-         "spacing":2,
-         "tilecount":156,
          "tileheight":70,
          "tilewidth":70
         }],

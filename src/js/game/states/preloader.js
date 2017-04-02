@@ -5,7 +5,7 @@ preloader.preload = function () {
 
   //ajoute un libelle qui indique le chargement dans le canvas
   var loadingLabel = this.game.add.text(this.game.width / 2, 150, 'chargement...', {
-    font: '30px Arial',
+    font: '30px pixel',
     fill: '#ffffff'
   });
   loadingLabel.anchor.setTo(0.5, 0.5);
@@ -24,13 +24,13 @@ preloader.preload = function () {
   //bouton mute sur le menu principale
   this.game.load.spritesheet('mute','images/muteButton.png',28,22);
 
+  //preload tilemap
   this.game.load.tilemap('niveau1', 'images/niveau1.json', null, Phaser.Tilemap.TILED_JSON);
 
   //  Next we load the tileset. This is just an image, loaded in via the normal way we load images:
   this.game.load.image('industrial', 'images/platformerPack_industrial_tilesheet.png');
   this.game.load.image('hints','images/collision.png');
   this.game.load.image('request', 'images/request_sheet.png');
-  this.game.load.image('basic','images/basic_tilesheet.png');
 
   //charge le background pour le menu State
   this.game.load.image('city_bg','images/city.png');

@@ -6,11 +6,11 @@ menu.create = function () {
     this.game.add.image(0, 0, 'overlay_bg');
     this.music = this.game.add.audio('menu'); // add the music
     this.music.loop = true; //make it loop
-    this.music.play(); //start the music
+   //this.music.play(); //start the music
 
     //affiche le nom du jeu
     var nameLabel = this.game.add.text(this.game.width / 2, -50, 'ESC', {
-        font: '70px Geo',
+        font: '70px pixelVector',
         fill: '#ffffff'
     });
     nameLabel.anchor.setTo(0.5, 0.5);
@@ -58,7 +58,6 @@ menu.toggleSound = function () {
 }
 
 menu.demarrer = function () {
-    console.log("let's start this shit up");
     //this.game.state.start('level1');
 
     //Si lon tappe sur le coin haut gauche sur mobile
