@@ -1,8 +1,5 @@
 var level1 = {};
-var map;
-var collisionLayer;
-var player;
-var cursors;
+var map, collisionLayer, player, cursors, jumpCount, jumpkey
 
 level1.create = function () {
     this.world.setBounds(0, 0, 840, 3500);
@@ -13,7 +10,7 @@ level1.create = function () {
     map.addTilesetImage('request_sheet', 'request');
 
     backgroundLayer = map.createLayer('background');
-    
+
     collisionLayer = map.createLayer('platform');
 
     collisionLayer.visible = true;
@@ -23,8 +20,6 @@ level1.create = function () {
 
     collisionLayer.resizeWorld();
 
-    //map.setCollision(1)
-
     player = this.game.add.sprite(32, this.game.world.height - 190, 'player');
 
     //animation du personnage cycle de marche
@@ -32,13 +27,17 @@ level1.create = function () {
     player.animations.add('right', [11, 12, 13, 12, 11], 10, true);
 
     player.anchor.setTo(0.5, 0.5);
-    
+
     this.game.physics.arcade.enable(player);
     player.body.collideWorldBounds = true;
     player.body.gravity.y = 500;
-    player.scale.setTo(0.7,0.7);
+    player.scale.setTo(0.7, 0.7);
 
-    
+    //test pour double jump
+    jumpCount = 0;
+    jumpkey = this.game.input.keyboard.addKey(Phaser.Keyboard.UP);
+    jumpkey.onDown.add(jumpCheck, this);
+
 
 
     enemy = this.game.add.sprite(32, this.game.world.height - 190, 'enemy');
@@ -58,40 +57,64 @@ level1.create = function () {
 }
 
 level1.update = function () {
-    this.game.physics.arcade.collide(player, collisionLayer);
+    var hitPlatform = this.game.physics.arcade.collide(player, collisionLayer);
     player.body.velocity.x = 0;
+
 
 
     if (cursors.left.isDown) {
         //  Move to the left
         player.body.velocity.x = -150;
         player.animations.play('right');
+        if(!hitPlatform){
+            player.frame = 24;
+        };
 
-    }
-
-    if (cursors.right.isDown) {
+    } else if (cursors.right.isDown) {
         //  Move to the right
         player.body.velocity.x = 150;
         player.animations.play('left');
-    }
-    if (cursors.up.isDown) {
-        //  Move to the right
-        player.body.velocity.y = -200;
+        if(!hitPlatform){
+            player.frame = 23;
+        };
 
+    } else {
+        //  Stand still
+        player.animations.stop();
+        player.frame = 22;
     }
-    if (cursors.down.isDown) {
-        //  Move to the right
-        player.body.velocity.y = 150;
 
+
+    if (hitPlatform) {
+        jumpCount = 0;
     }
+
     if (Phaser.Rectangle.containsPoint(this.exitRect, player.position)) {
         // and we just reset it to it's starting position
         resetPlayer();
     }
+
 }
 
-resetPlayer = function(){
+
+jumpCheck = function () {
+    if (jumpCount < 2) {
+        jump();
+        jumpCount++;
+    }
+}
+
+
+jump = function () {
+    player.body.velocity.y = -200;
+
+}
+
+resetPlayer = function () {
     console.log("sreset");
 }
 
+
 module.exports = level1;
+
+//tells phaser to fire jumpCheck() ONCE per onDown event.jumpCheck = function(){   if (player.jumpCount < 2){      player.jump();      player.jumpCount ++;   }}
