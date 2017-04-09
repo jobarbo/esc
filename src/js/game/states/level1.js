@@ -11,10 +11,9 @@ level1.create = function () {
     map.addTilesetImage('tile_industriel', 'industrial');
     map.addTilesetImage('hints', 'hints');
     map.addTilesetImage('request_sheet', 'request');
-  
 
     backgroundLayer = map.createLayer('background');
-
+    
     collisionLayer = map.createLayer('platform');
 
     collisionLayer.visible = true;
@@ -27,11 +26,22 @@ level1.create = function () {
     //map.setCollision(1)
 
     player = this.game.add.sprite(32, this.game.world.height - 190, 'player');
-    player.anchor.setTo(0.5, 0.5);
 
+    //animation du personnage cycle de marche
+    player.animations.add('left', [0, 1, 2, 1, 0], 10, true);
+    player.animations.add('right', [11, 12, 13, 12, 11], 10, true);
+
+    player.anchor.setTo(0.5, 0.5);
+    
     this.game.physics.arcade.enable(player);
     player.body.collideWorldBounds = true;
     player.body.gravity.y = 500;
+    player.scale.setTo(0.7,0.7);
+
+    
+
+
+    enemy = this.game.add.sprite(32, this.game.world.height - 190, 'enemy');
 
 
     //  Our controls.
@@ -55,17 +65,18 @@ level1.update = function () {
     if (cursors.left.isDown) {
         //  Move to the left
         player.body.velocity.x = -150;
+        player.animations.play('right');
 
     }
 
     if (cursors.right.isDown) {
         //  Move to the right
         player.body.velocity.x = 150;
-
+        player.animations.play('left');
     }
     if (cursors.up.isDown) {
         //  Move to the right
-        player.body.velocity.y = -350;
+        player.body.velocity.y = -200;
 
     }
     if (cursors.down.isDown) {
