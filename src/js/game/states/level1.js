@@ -36,7 +36,8 @@ level1.create = function () {
     //test pour double jump
     jumpCount = 0;
     jumpkey = this.game.input.keyboard.addKey(Phaser.Keyboard.UP);
-    jumpkey.onDown.add(jumpCheck, this);
+    
+    
 
 
 
@@ -60,13 +61,16 @@ level1.update = function () {
     var hitPlatform = this.game.physics.arcade.collide(player, collisionLayer);
     player.body.velocity.x = 0;
 
+    if (player.body.onFloor()){
+        jumpkey.onDown.add(jumpCheck, this);
+    }
 
 
     if (cursors.left.isDown) {
         //  Move to the left
         player.body.velocity.x = -150;
         player.animations.play('right');
-        if(!hitPlatform){
+        if (!hitPlatform) {
             player.frame = 24;
         };
 
@@ -74,7 +78,7 @@ level1.update = function () {
         //  Move to the right
         player.body.velocity.x = 150;
         player.animations.play('left');
-        if(!hitPlatform){
+        if (!hitPlatform) {
             player.frame = 23;
         };
 
@@ -85,7 +89,7 @@ level1.update = function () {
     }
 
 
-    if (hitPlatform) {
+    if (player.body.onFloor()) {
         jumpCount = 0;
     }
 
@@ -98,16 +102,16 @@ level1.update = function () {
 
 
 jumpCheck = function () {
-    if (jumpCount < 2) {
-        jump();
-        jumpCount++;
-    }
+
+        if (jumpCount < 2) {
+            jump();
+            jumpCount++;
+        }
 }
 
 
 jump = function () {
     player.body.velocity.y = -200;
-
 }
 
 resetPlayer = function () {
