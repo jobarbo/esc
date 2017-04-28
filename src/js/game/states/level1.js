@@ -1,7 +1,8 @@
 var level1 = {};
-var map, collisionLayer, player, cursors, jumpCount, jumpkey
+var map, collisionLayer, player, cursors, jumpCount, jumpkey, theGame
 
 level1.create = function () {
+    theGame = this;
     this.world.setBounds(0, 0, 840, 3500);
     map = this.game.add.tilemap('niveau1');
 
@@ -29,7 +30,7 @@ level1.create = function () {
     player.anchor.setTo(0.5, 0.5);
 
     this.game.physics.arcade.enable(player);
-    player.body.collideWorldBounds = true;
+    player.body.collideWorldBounds = false;
     player.body.gravity.y = 500;
     player.scale.setTo(0.7, 0.7);
 
@@ -61,8 +62,9 @@ level1.update = function () {
     var hitPlatform = this.game.physics.arcade.collide(player, collisionLayer);
     player.body.velocity.x = 0;
 
+
+
     if (player.body.onFloor()){
-        console.log("onFloor");
         jumpkey.onDown.add(jumpCheck, this);
     }
 
@@ -96,7 +98,11 @@ level1.update = function () {
 
     if (Phaser.Rectangle.containsPoint(this.exitRect, player.position)) {
         // and we just reset it to it's starting position
-        resetPlayer();
+        resetPlayer(theGame);
+    }
+    console.log(player.body.y.outOfWorldBounds);
+    if(!player.inWorld){
+        resetPlayer(theGame);
     }
 
 }
@@ -117,11 +123,10 @@ jump = function () {
         jumpCount++;
 }
 
-resetPlayer = function () {
-    console.log("sreset");
+resetPlayer = function () {;
+    theGame.state.start("preloader");
 }
 
 
 module.exports = level1;
 
-//tells phaser to fire jumpCheck() ONCE per onDown event.jumpCheck = function(){   if (player.jumpCount < 2){      player.jump();      player.jumpCount ++;   }}
