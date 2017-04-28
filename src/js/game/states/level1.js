@@ -62,13 +62,14 @@ level1.update = function () {
     player.body.velocity.x = 0;
 
     if (player.body.onFloor()){
+        console.log("onFloor");
         jumpkey.onDown.add(jumpCheck, this);
     }
 
 
     if (cursors.left.isDown) {
         //  Move to the left
-        player.body.velocity.x = -150;
+        player.body.velocity.x = -350;
         player.animations.play('right');
         if (!hitPlatform) {
             player.frame = 24;
@@ -76,7 +77,7 @@ level1.update = function () {
 
     } else if (cursors.right.isDown) {
         //  Move to the right
-        player.body.velocity.x = 150;
+        player.body.velocity.x = 350;
         player.animations.play('left');
         if (!hitPlatform) {
             player.frame = 23;
@@ -102,16 +103,18 @@ level1.update = function () {
 
 
 jumpCheck = function () {
-
-        if (jumpCount < 2) {
-            jump();
-            jumpCount++;
-        }
+    if(jumpCount == 0  && !player.body.onFloor()){
+        return;
+    }
+    else if (jumpCount < 2) {
+        jump();       
+    }
 }
 
 
 jump = function () {
-    player.body.velocity.y = -200;
+        player.body.velocity.y = -300;
+        jumpCount++;
 }
 
 resetPlayer = function () {
