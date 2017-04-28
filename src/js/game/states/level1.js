@@ -2,8 +2,7 @@ var level1 = {};
 var map, collisionLayer, player, cursors, jumpCount, jumpkey, theGame
 
 level1.create = function () {
-    theGame = this;
-    this.world.setBounds(0, 0, 840, 3500);
+    
     map = this.game.add.tilemap('niveau1');
 
     map.addTilesetImage('tile_industriel', 'industrial');
@@ -31,7 +30,7 @@ level1.create = function () {
 
     this.game.physics.arcade.enable(player);
     player.body.collideWorldBounds = false;
-    player.body.gravity.y = 500;
+    player.body.gravity.y = 600;
     player.scale.setTo(0.7, 0.7);
 
     //test pour double jump
@@ -65,7 +64,7 @@ level1.update = function () {
 
 
     if (player.body.onFloor()){
-        jumpkey.onDown.add(jumpCheck, this);
+        jumpkey.onDown.add(this.jumpCheck, this);
     }
 
 
@@ -98,33 +97,33 @@ level1.update = function () {
 
     if (Phaser.Rectangle.containsPoint(this.exitRect, player.position)) {
         // and we just reset it to it's starting position
-        resetPlayer(theGame);
+        this.resetPlayer();
     }
-    console.log(player.body.y.outOfWorldBounds);
+
     if(!player.inWorld){
-        resetPlayer(theGame);
+        this.resetPlayer();
     }
 
 }
 
 
-jumpCheck = function () {
+level1.jumpCheck = function () {
     if(jumpCount == 0  && !player.body.onFloor()){
         return;
     }
     else if (jumpCount < 2) {
-        jump();       
+        this.jump();       
     }
 }
 
 
-jump = function () {
+level1.jump = function () {
         player.body.velocity.y = -300;
         jumpCount++;
 }
 
-resetPlayer = function () {;
-    theGame.state.start("preloader");
+level1.resetPlayer = function () {;
+    this.game.state.start("preloader");
 }
 
 
