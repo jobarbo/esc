@@ -16,7 +16,7 @@ preloader.preload = function () {
   this.game.load.setPreloadSprite(progressBar);
 
   //charge le joueur
-  this.game.load.spritesheet('player','images/p1_walk3.png',75,92);
+  this.game.load.spritesheet('player','images/pixel_perso.png',21,21);
   //et le reste des images : enemy
   this.game.load.image('enemy','images/enemyFloating_1.png');
   this.game.load.image('enemy_death','images/enemyFloating_4.png');
