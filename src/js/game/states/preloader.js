@@ -28,9 +28,7 @@ preloader.preload = function () {
   this.game.load.tilemap('niveau1', 'images/niveau1.json', null, Phaser.Tilemap.TILED_JSON);
 
   //  Next we load the tileset. This is just an image, loaded in via the normal way we load images:
-  this.game.load.image('industrial', 'images/platformerPack_industrial_tilesheet.png');
-  this.game.load.image('hints','images/collision.png');
-  this.game.load.image('request', 'images/request_sheet.png');
+  this.game.load.image('pixel','images/pixel.png');
 
   //charge le background pour le menu State
   this.game.load.image('city_bg','images/city.png');

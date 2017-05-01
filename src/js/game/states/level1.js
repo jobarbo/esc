@@ -1,22 +1,17 @@
 var level1 = {};
-var map, collisionLayer, player, cursors, jumpCount, jumpkey, theGame
+var map, collisionLayer, player, cursors, jumpCount, jumpkey, theGame, playerScale
 
 level1.create = function () {
     
     map = this.game.add.tilemap('niveau1');
 
-
-    map.addTilesetImage('tile_industriel', 'industrial');
-    map.addTilesetImage('hints', 'hints');
-    map.addTilesetImage('request_sheet', 'request');
+    map.addTilesetImage('pixel','pixel');
 
    
 
     backgroundLayer = map.createLayer('background');
-    //backgroundLayer.scale.set(1);
 
     collisionLayer = map.createLayer('platform');
-    //collisionLayer.scale.set(1);
 
     collisionLayer.visible = true;
 
@@ -37,16 +32,16 @@ level1.create = function () {
     this.game.physics.arcade.enable(player);
     player.body.collideWorldBounds = true;
     player.body.gravity.y = 600;
-    player.scale.setTo(2, 2);
+    player.scale.setTo(0.9, 0.9);
+    playerScale = player.scale.x;
 
-    //test pour double jump
+
     jumpCount = 0;
     jumpkey = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
     
-    //this.game.camera.follow(player);
     this.game.camera.follow(player, Phaser.Camera.FOLLOW_PLATFORMER);
 
-
+    //this.game.world.scale.setTo(1.5, 1.5);
 
     enemy = this.game.add.sprite(32, this.game.world.height - 190, 'enemy');
 
@@ -74,19 +69,17 @@ level1.update = function () {
 
 
     if (cursors.left.isDown) {
-        
-        this.flipPlayer();
-        //  Move to the left
-        player.body.velocity.x = -150;
+        player.scale.x = -playerScale;
+        player.body.velocity.x = -50;
         player.animations.play('right');
         if (!hitPlatform) {
             player.frame = 3;
         };
 
     } else if (cursors.right.isDown) {
-        this.flipPlayer();
-        //  Move to the right
-        player.body.velocity.x = 150;
+
+        player.scale.x = playerScale;
+        player.body.velocity.x =  50;
         player.animations.play('left');
         if (!hitPlatform) {
             player.frame = 3;

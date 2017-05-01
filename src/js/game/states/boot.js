@@ -2,6 +2,14 @@ var Stats = require('../../lib/stats.min');
 var properties = require('../properties');
 var boot = {};
 
+boot.init = function () {
+  this.game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL; 
+ //centre le jeu sur l'ecran de l'appareil
+  this.game.scale.pageAlignHorizontally = true;
+  this.game.scale.pageAlignVertically = true;
+  this.game.stage.smoothed = false;
+}
+
 boot.preload = function() {
   //chargement de l'image pour la barre de chargement
   this.game.load.image('progressBar','images/progressBar.png')
@@ -19,9 +27,7 @@ boot.create = function () {
   this.game.physics.startSystem(Phaser.Physics.P2JS);
   this.game.renderer.renderSession.roundPixels = true;
 
-  //centre le jeu sur l'ecran de l'appareil
-  this.game.scale.pageAlignHorizontally = true;
-  this.game.scale.pageAlignVertically = true;
+ 
 
   //ajoute une couleur a la page pour cacher les espace blanc
   document.body.style.backgroundColor = '#142A53';
