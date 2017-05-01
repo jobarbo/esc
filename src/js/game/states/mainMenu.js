@@ -7,7 +7,7 @@ mainMenu.create = function () {
     this.game.add.image(0, 0, 'overlay_bg');
     this.music = this.game.add.audio('menu'); // add the music
     this.music.loop = true; //make it loop
-   this.music.play(); //start the music
+    //this.music.play(); //start the music
 
     //affiche le nom du jeu
     var nameLabel = this.game.add.text(this.game.width / 2, -50, 'ESC', {
