@@ -4,7 +4,7 @@ var boot = {};
 
 boot.init = function () {
   this.game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL; 
- //centre le jeu sur l'ecran de l'appareil
+  //centre le jeu sur l'ecran de l'appareil
   this.game.scale.pageAlignHorizontally = true;
   this.game.scale.pageAlignVertically = true;
   this.game.stage.smoothed = false;
@@ -24,7 +24,7 @@ boot.create = function () {
   this.game.stage.backgroundColor = '#3498db';
   
   //initialisation des physiques complexe
-  this.game.physics.startSystem(Phaser.Physics.P2JS);
+  this.game.physics.startSystem(Phaser.Physics.ARCADE);
   this.game.renderer.renderSession.roundPixels = true;
 
  

@@ -7,7 +7,7 @@ var bounds;
 var states = {
   boot: require('./states/boot.js'),
   preloader: require('./states/preloader.js'),
-  menu: require('./states/menu.js'),
+  mainMenu: require('./states/mainMenu.js'),
   levelSelector: require('./states/levelSelector.js'),
   level1: require('./states/level1.js')
 };
