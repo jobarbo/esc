@@ -11,7 +11,7 @@ level1.create = function () {
     collisionLayer = map.createLayer('platform');
     
     collisionLayer.visible = true;
-    collisionLayer.debug = true;
+    collisionLayer.debug = false;
 
     //setup the collision by exclusion
     map.setCollisionByExclusion([], true, collisionLayer);
