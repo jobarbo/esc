@@ -18,6 +18,7 @@ preloader.preload = function () {
 
   //charge le joueur
   this.game.load.spritesheet('player','images/pixel_perso.png',21,21);
+
   //et le reste des images : enemy
   this.game.load.image('enemy','images/enemy.png');
   this.game.load.image('enemy_death','images/enemy_dead.png');
@@ -26,7 +27,7 @@ preloader.preload = function () {
   this.game.load.spritesheet('mute','images/muteButton.png',28,22);
 
   //preload tilemap
-  this.game.load.tilemap('niveau1', 'images/niveau1.json', null, Phaser.Tilemap.TILED_JSON);
+  this.game.load.tilemap('niveau1', 'images/niveautest.json', null, Phaser.Tilemap.TILED_JSON);
 
   //  Next we load the tileset. This is just an image, loaded in via the normal way we load images:
   this.game.load.image('pixel','images/pixel.png');
