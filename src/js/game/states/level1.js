@@ -181,14 +181,15 @@ level1.movePlayer = function(){
 //fonction qui s'occuppe de l'animation de l'ennemi
 level1.moveEnemy = function () {
     
-    var enemyTween1 = this.game.add.tween(enemy).to({x: this.enemyStop1Rect.x },7000, "Sine.easeInOut");
-    var enemyTween2 = this.game.add.tween(enemy).to({x: this.enemyEndRect.x },7000, "Sine.easeInOut");
-    var enemyTween3 = this.game.add.tween(enemy).to({x: this.enemyStop1Rect.x },7000, "Sine.easeInOut");
-    var enemyTween4 = this.game.add.tween(enemy).to({x: this.enemyBeginRect.x },7000, "Sine.easeInOut");
+    var enemyTween1 = this.game.add.tween(enemy).to({x: this.enemyStop1Rect.x },3000, "Sine.easeInOut");
+    var enemyTween2 = this.game.add.tween(enemy).to({x: this.enemyEndRect.x },3000, "Sine.easeInOut");
+    var enemyTween3 = this.game.add.tween(enemy).to({x: this.enemyStop1Rect.x },3000, "Sine.easeInOut");
+    var enemyTween4 = this.game.add.tween(enemy).to({x: this.enemyBeginRect.x },5000, "Sine.easeInOut");
     enemyTween1.chain(enemyTween2);
     enemyTween2.chain(enemyTween3);
     enemyTween3.chain(enemyTween4);
     enemyTween4.chain(enemyTween1);
+
 
     enemyTween1.start();
     
