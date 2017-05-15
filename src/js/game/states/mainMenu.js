@@ -1,13 +1,13 @@
 var mainMenu = {};
 
 mainMenu.create = function () {
-    this.game.add.image(0, 0, 'color_bg');
+    //this.game.add.image(0, 0, 'color_bg');
     city = this.game.add.image(0, 0, 'city_bg');
     city.scale.setTo(1.5,1.5);
-    this.game.add.image(0, 0, 'overlay_bg');
+    //this.game.add.image(0, 0, 'overlay_bg');
     this.music = this.game.add.audio('menu'); // add the music
     this.music.loop = true; //make it loop
-   this.music.play(); //start the music
+    //this.music.play(); //start the music
 
     //affiche le nom du jeu
     var nameLabel = this.game.add.text(this.game.width / 2, -50, 'ESC', {
