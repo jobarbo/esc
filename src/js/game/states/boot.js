@@ -27,8 +27,6 @@ boot.create = function () {
   this.game.physics.startSystem(Phaser.Physics.ARCADE);
   this.game.renderer.renderSession.roundPixels = true;
 
- 
-
   //ajoute une couleur a la page pour cacher les espace blanc
   document.body.style.backgroundColor = '#142A53';
 
