@@ -1,191 +1,220 @@
 var level1 = {};
-var map, collisionLayer, player, cursors,light, jumpCount, jumpkey, theGame, playerScale, heroLanding
+var map, collisionLayer, player, cursors,light, jumpCount, jumpkey, theGame, playerScale, heroLanding, raycasting, hitPlatform 
 var ray; var tileHits = [];
 level1.create = function () {
-
-    
-    //setup the map
+    //configure la tilemap
     map = this.game.add.tilemap('niveau1');
     map.addTilesetImage('pixel','pixel');
     backgroundLayer = map.createLayer('background');
+    falseCollisionLayer = map.createLayer('platform');
     collisionLayer = map.createLayer('platform');
+    interactiveLayer = map.createLayer('interactive');
     
-    collisionLayer.visible = true;
+    begin = map.objects.evenement.find(o => o.name == 'begin')
+    this.beginRect = new Phaser.Rectangle(begin.x, begin.y, begin.width, begin.height);
+    // extraction le l'objet ''sortie'' qui se trouve dans le tile map
+    // Ce qui suis va etre utilisé dans la fonction update pour savoir si le personnage a completé le niveau
+    exit = map.objects.evenement.find(o => o.name == 'exit');
+    this.exitRect = new Phaser.Rectangle(exit.x, exit.y, exit.width, exit.height);
+
+    //charge le sprite du joueur et le positionne au point de depart
+    
+    player = this.game.add.sprite(begin.x+10, begin.y+begin.height, 'player');
+    console.log(player);
+    player.alpha = 0;
+
+    var appear = this.game.add.tween(player).to({alpha: 1 },1000, "Sine.easeInOut", true, 0);
+    //appear.yoyo(true,50);
+    //animation du personnage cycle de marche
+    player.animations.add('left', [0, 1], 10, true);
+    player.animations.add('right', [0, 1], 10, true);
+    player.anchor.setTo(0.5, 0.5);
+
+    //configuration de propriété physique du joueur
+    this.game.physics.arcade.enable(player);
+    player.body.collideWorldBounds = false;
+    player.body.gravity.y = 300;
+    player.scale.setTo(1, 1);
+    playerScale = player.scale.x;
+
+    // creation d'une texture bitmap qui va dessiné les cones ''lumiere''
+    this.bitmap = this.game.add.bitmapData(this.game.width, this.game.height);
+    this.bitmap.context.fillStyle = 'rgb(255, 255, 255)';
+    this.bitmap.context.strokeStyle = 'rgb(255, 255, 255)';
+    var lightBitmap = this.game.add.image(0, 0, this.bitmap);
+    lightBitmap.blendMode = Phaser.blendModes.MULTIPLY;
+    
+    // cration d'un bitmap pour dessiné les ''rayon''
+    this.rayBitmap = this.game.add.bitmapData(this.game.width, this.game.height);
+    this.rayBitmapImage = this.game.add.image(0, 0, this.rayBitmap);
+    this.rayBitmapImage.visible = false;
+
+    // Function de débug pour afficher ou non les rayon de lumiere
+    this.game.input.onTap.add(this.toggleRays, this);
+
+
+
+    
+    
+    
+    collisionLayer.visible = false;
     collisionLayer.debug = false;
 
-    //setup the collision by exclusion
+    //ajoute les collision par exclusion de du calque de collision 
     map.setCollisionByExclusion([], true, collisionLayer);
     collisionLayer.resizeWorld();
+    collisionLayer.collideWorldBounds= false;
     backgroundLayer.resizeWorld();
 
 
     collisionData=collisionLayer.layer.data;
     collisionChildData=[];
 
+
     for(i=0;i<collisionData.length;i++){
         for(z=0; z<collisionData[i].length;z++){
             if(collisionData[i][z].canCollide){
-                 collisionChildData.push(collisionData[i][z])
+                collisionChildData.push(collisionData[i][z]);
             }
         }
     }
-
     
-
-    //load the base sprite for the player
-    player = this.game.add.sprite(32, this.game.world.height - 100, 'player');
-    
-    //animation du personnage cycle de marche
-    player.animations.add('left', [0, 1], 10, true);
-    player.animations.add('right', [0, 1], 10, true);
-    player.anchor.setTo(0.5, 0.5);
-
-    //this.game.physics.arcade.enable(player);
-    this.game.physics.arcade.enable(player);
-    player.body.collideWorldBounds = true;
-    player.body.gravity.y = 300;
-    player.scale.setTo(1, 1);
-    playerScale = player.scale.x;
-
-
-    //setup the jump count and the jump key
+    //Configure le compteur de saut pour créé un doule saut
     jumpCount = 0;
     jumpkey = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
     
-    //setup the camera behavior
+    //configure le comportement de la camera
     this.game.camera.follow(player, Phaser.Camera.FOLLOW_PLATFORMER);
 
-    //load the enemy sprite
+    //charge les sprite de l'ennemi
     enemy = this.game.add.sprite(32, this.game.world.height - 220, 'enemy');
     enemy.anchor.setTo(0.5,0.5);
 
-    // Create a bitmap texture for drawing light cones
-    this.bitmap = this.game.add.bitmapData(this.game.width, this.game.height);
-    this.bitmap.context.fillStyle = 'rgb(255, 255, 255)';
-    this.bitmap.context.strokeStyle = 'rgb(255, 255, 255)';
-    var lightBitmap = this.game.add.image(0, 0, this.bitmap);
-    lightBitmap.blendMode = Phaser.blendModes.MULTIPLY;
+    //positionne l'ennemi a cette position de base
+    enemy.x = 10;
+    enemy.y = 30;
+    this.moveEnemy();
+    
+    foregroundLayer = map.createLayer('foreground'); 
 
-    // Create a bitmap for drawing rays
-    this.rayBitmap = this.game.add.bitmapData(this.game.width, this.game.height);
-    this.rayBitmapImage = this.game.add.image(0, 0, this.rayBitmap);
-    this.rayBitmapImage.visible = false;
-
-    // Setup function for hiding or showing rays
-    this.game.input.onTap.add(this.toggleRays, this);
-
-    // Simulate a pointer click/tap input at the center of the stage
-    // when the example begins running.
-    this.game.input.activePointer.x = this.game.width/2;
-    this.game.input.activePointer.y = this.game.height/2;
-
-    //  Our controls.
+    //  les controles du jeu
     cursors = this.game.input.keyboard.createCursorKeys();
-
-    // pull the exit area from the object layer
-    // we will be using this one during update to check if our player has moved into the exit area
-    exit = map.objects.evenement.find(o => o.name == 'exit');
-    this.exitRect = new Phaser.Rectangle(exit.x, exit.y, exit.width, exit.height);
     
     heroLanding = false;
-
+    
 }
 
 level1.update = function () {
 
+    // creation d'une variable qui contien false mais qui devien true lors de la collision entre le joueur et les plateforme
+    hitPlatform = this.game.physics.arcade.collide(player, collisionLayer);
+
     this.enableRaycasting();
-
+    this.lineOfSight();
+    this.movePlayer();
     
-    var hitPlatform = this.game.physics.arcade.collide(player, collisionLayer);
-    player.body.velocity.x = 0;
-     
-    if(player.body.velocity.y >= 200){
-        heroLanding = true;
-    }
-
-    if (player.body.onFloor()){
-        jumpkey.onDown.add(this.jumpCheck, this);
-    }
-
-
-    if (cursors.left.isDown) {
-        player.scale.x = -playerScale;
-        player.body.velocity.x = -50;
-        player.animations.play('right');
-        if (!hitPlatform) {
-            player.frame = 3;
-        };
-
-    } else if (cursors.right.isDown) {
-
-        player.scale.x = playerScale;
-        player.body.velocity.x =  50;
-        player.animations.play('left');
-        if (!hitPlatform) {
-            player.frame = 3;
-        };
-
-    } else if(heroLanding == true && player.body.onFloor()){
-        player.frame = 4;
-        this.game.time.events.add(Phaser.Timer.SECOND * 0.6, function(){
-            heroLanding = false;
-        });
-        
-    } else {
-        //  Stand still
-        player.animations.stop();
-        player.frame = 2;
-    }
-
     
-    if (player.body.onFloor()) {
-        jumpCount = 0;
-    }
-
+    //si le joueur touche au rectacle exitRect, demarre le prochain niveau
     if (Phaser.Rectangle.containsPoint(this.exitRect, player.position)) {
-        // and we just reset it to it's starting position
         this.resetPlayer();
     }
-
+    //si le joueur n'est plus dans le monde de jeu, affiche l'écran game Over
     if(!player.inWorld){
         this.resetPlayer();
     }
 
 }
 
-level1.jumpCheck = function ()  { 
-    if(jumpCount == 0  && !player.body.onFloor()){
-        return;
+//fonction qui s'occupe de l'animation du joueur
+level1.movePlayer = function(){
+    //reconfigure la velocité du joueur a chaque itération de la function update(60fps)
+    player.body.velocity.x = 0;
+     
+    //si la vitesse de chute depasse 200, active le heroLanding
+    if(player.body.velocity.y >= 200){
+        heroLanding = true;
     }
-    else if (jumpCount < 2) {
-        this.jump();       
+
+    //si le corps du joueur touche au tuile et que l'on pese sur le touche de saut, démarre le processus de saut.
+    if (player.body.onFloor()){
+        jumpkey.onDown.add(this.jumpCheck, this);
+    }
+
+    //bouge le joueur a gauche et l'anime
+    if (cursors.left.isDown) {
+        player.scale.x = -playerScale;
+        player.body.velocity.x = -80;
+        player.animations.play('right');
+        if (!hitPlatform) {
+            player.frame = 3;
+        };
+    //bouge le joueur a droite et l'anime
+    } else if (cursors.right.isDown) {
+
+        player.scale.x = playerScale;
+        player.body.velocity.x =  80;
+        player.animations.play('left');
+        if (!hitPlatform) {
+            player.frame = 3;
+        };
+    //si le heroLanding est activé et que le joueur touche au sol, débloque une animation additonelle
+    } else if(heroLanding == true && player.body.onFloor()){
+        player.frame = 4;
+        this.game.time.events.add(Phaser.Timer.SECOND * 0.6, function(){
+            heroLanding = false;
+        });
+    //si aucun bouton n'est pressé le joueur est debout face camera  
+    } else {
+        //  Stand still
+        player.animations.stop();
+        player.frame = 2;
+    }
+
+    //si le joueur touche au sol, reinitialise le compteur de saut a 0
+    if (player.body.onFloor()) {
+        jumpCount = 0;
     }
 }
-
-
-level1.jump = function () {
-        player.body.velocity.y = -150;
-        jumpCount++;
+//fonction qui s'occuppe de l'animation de l'ennemi
+level1.moveEnemy = function () {
+    
+    var tween = this.game.add.tween(enemy).to({x: 120 },5000, "Sine.easeInOut", true, 0, -1);
+    tween.yoyo(true,50);
 }
 
-level1.flipPlayer = function () {
-    player.scale.x *=-1;
+// fonction qui s'occupe de créé un ligne qui vérifie si l'ennemie percois le joueur
+level1.lineOfSight = function() {
+    var ray = new Phaser.Line(enemy.x, enemy.y, player.x, player.y);
+
+    // Vérifie si un mur bloque la vision entre l'ennemi et le joueur
+    var intersect = this.getWallIntersection(ray);
+
+    if (intersect) {
+        // un mur bloque la vision de l'ennmi donc l'ennmi affiche une couleur par defaut
+        enemy.tint = 0xffffff;
+    } else {
+        // l'ennemi peut voir le joueur donc sa couleur change
+        enemy.tint = 0xffaaaa;
+
+        /*// Draw a line from the ball to the person
+        this.bitmap.context.beginPath();
+        this.bitmap.context.moveTo(enemy.x, enemy.y);
+        this.bitmap.context.lineTo(player.x, player.y);
+        this.bitmap.context.stroke();*/
+        }
+    this.bitmap.dirty = true;
 }
 
-level1.resetPlayer = function () {;
-    this.game.state.start("preloader");
-}
-
+//fonction qui active le affichage des rayon de lumiere
 level1.enableRaycasting = function() {
-    // Move the enemy to the pointer/touch location
-    enemy.x = this.game.input.activePointer.x;
-    enemy.y = this.game.input.activePointer.y;
+
 
     // Next, fill the entire light bitmap with a dark shadow color.
+    // remplis le bitmap de lumiere creer plus tot avec une couleur sombre
     this.bitmap.context.fillStyle = 'rgb(100, 100, 100)';
     this.bitmap.context.fillRect(0, 0, this.game.width, this.game.height);
 
-    // An array of the stage corners that we'll use later
+    // un tableau qui contient les 4 coin du jeu
     var stageCorners = [
         new Phaser.Point(0, 0),
         new Phaser.Point(this.game.width, 0),
@@ -195,16 +224,17 @@ level1.enableRaycasting = function() {
 
 
     // Ray casting!
-    // Cast rays through the corners of each wall towards the stage edge.
-    // Save all of the intersection points or ray end points if there was no intersection.
+    // trace des rayon vers chaque coin de chaque mur 
+    // sauvegarde tout les point qui interagisse avec un mur qui a la propriété de collision
     var points = [];
     var ray = null;
     var intersect;
     var i;
+    var corners;
     collisionChildData.forEach(function(collisionChildData) {
-        // Create a ray from the light through each corner out to the edge of the stage.
-        // This array defines points just inside of each corner to make sure we hit each one.
-        // It also defines points just outside of each corner so we can see to the stage edges.
+        // creation d'un rayon a partir de l'enemie au travers de chanque coin de la scene
+        // ce tableau definis les points ce trouvant a l'interieur de chaque coin pour avoir une surface de contact plus sur
+        // cela defini aussi les points a l'exterieur des coin, de cette facon l'ombre contourne les coins
         var corners = [
             new Phaser.Point(collisionChildData.worldX+0.1, collisionChildData.worldY+0.1),
             new Phaser.Point(collisionChildData.worldX-0.1, collisionChildData.worldY-0.1),
@@ -218,11 +248,13 @@ level1.enableRaycasting = function() {
             new Phaser.Point(collisionChildData.worldX+0.1, collisionChildData.worldY-0.1 + collisionChildData.height),
             new Phaser.Point(collisionChildData.worldX-0.1, collisionChildData.worldY+0.1 + collisionChildData.height)
         ];
-        // Calculate rays through each point to the edge of the stage
+        
+        // calculation des rayon vers chaque point generer dans la scene
         for(i = 0; i < corners.length; i++) {
             var c = corners[i];
 
-            // Here comes the linear algebra.
+            // un peu d'algebre linéaire ( je ne suis pas l'auteur de se code)
+            // ce code genere les ligne pour le debug ( voir les ligne de lumiere)
             // The equation for a line is y = slope * x + b
             // b is where the line crosses the left edge of the stage
             var slope = (c.y - enemy.y) / (c.x - enemy.x);
@@ -279,22 +311,21 @@ level1.enableRaycasting = function() {
                 }
             }
 
-            // Create a ray
+            // Creation d'un rayon
             ray = new Phaser.Line( enemy.x, enemy.y,end.x, end.y);
-            // Check if the ray intersected the wall
+            // cérifie si le rayon touche a un mur
             intersect = this.getWallIntersection(ray);
             if (intersect) {
-                // This is the front edge of the light blocking object
+                // si oui, le point de contact est ajouté au tableau des point
                 points.push(intersect);
                
             } 
 
         }
     }, this);
-
-    // Shoot rays at each of the stage corners to see if the corner
-    // of the stage is in shadow. This needs to be done so that
-    // shadows don't cut the corner.
+    
+    // verifie si le coin de la scene est dans l'ombre
+    // ceci doit etre fait pour s'assurer que la lumiere ne coupe pas les coins
     for(i = 0; i < stageCorners.length; i++) {
         ray = new Phaser.Line(enemy.x, enemy.y,
             stageCorners[i].x, stageCorners[i].y);
@@ -340,10 +371,9 @@ level1.enableRaycasting = function() {
     });
 
 
-    // Connect the dots and fill in the shape, which are cones of light,
-    // with a bright white color. When multiplied with the background,
-    // the white color will allow the full color of the background to
-    // shine through.
+    // connection des point a l'enemie et remplis les forme en cone de lumiere
+    // lorsque ces cone sont multiplier avec le background, la couleur blanche
+    // va permettre a la couleur du background de s'afficher comme si elle étais éclairée
     this.bitmap.context.beginPath();
     this.bitmap.context.fillStyle = 'rgb(255, 255, 255)';
     this.bitmap.context.moveTo(points[0].x, points[0].y);
@@ -353,7 +383,7 @@ level1.enableRaycasting = function() {
     this.bitmap.context.closePath();
     this.bitmap.context.fill();
 
-    // Draw each of the rays on the rayBitmap
+    // dessine chacun des rayon dans le rayBitmap
     this.rayBitmap.context.clearRect(0, 0, this.game.width, this.game.height);
     this.rayBitmap.context.beginPath();
     this.rayBitmap.context.strokeStyle = 'rgb(255, 255, 255)';
@@ -366,16 +396,18 @@ level1.enableRaycasting = function() {
     }
     this.rayBitmap.context.stroke();
 
-    // This just tells the engine it should update the texture cache
+    // indique a phaser de mettre a jour la cache du bitmap
     this.bitmap.dirty = true;
     this.rayBitmap.dirty = true;
+
+    raycasting = false;
 
 
 
 }
 
 level1.toggleRays = function() {
-    // Toggle the visibility of the rays when the pointer is clicked
+    // active ou non la visibilité des rayon au click de la souris
     if (this.rayBitmapImage.visible) {
         this.rayBitmapImage.visible = false;
     } else {
@@ -383,16 +415,15 @@ level1.toggleRays = function() {
     }
 };
 
-// Given a ray, this function iterates through all of the walls and
-// returns the closest wall intersection from the start of the ray
-// or null if the ray does not intersect any walls.
+// cette fonction itere dans tout les murs et retourn l'intersection la plus proche du point de depart du rayon
 level1.getWallIntersection = function(ray) {
     var distanceToWall = Number.POSITIVE_INFINITY;
     var closestIntersection = null;
 
-    // For each of the walls...
+    // pour chacun des murs
     collisionChildData.forEach(function(collisionChildData) {
-        // Create an array of lines that represent the four edges of each wall
+        // 
+        // cree un tableau de ligne qui représente les quatre coin de ce mur
         var lines = [
             new Phaser.Line(collisionChildData.worldX, collisionChildData.worldY, collisionChildData.worldX + collisionChildData.width, collisionChildData.worldY),
             new Phaser.Line(collisionChildData.worldX, collisionChildData.worldY, collisionChildData.worldX, collisionChildData.worldY + collisionChildData.height),
@@ -401,13 +432,12 @@ level1.getWallIntersection = function(ray) {
             new Phaser.Line(collisionChildData.worldX, collisionChildData.worldY + collisionChildData.height,
                 collisionChildData.worldX + collisionChildData.width, collisionChildData.worldY +collisionChildData.height)
         ];
-
-        // Test each of the edges in this wall against the ray.
-        // If the ray intersects any of the edges then the wall must be in the way.
+        // Teste chacun des coté du mur contre le rayon
+        // Si le rayon entre en contact avec les coin alors le mur est dans le chemin de la lumiere
         for(var i = 0; i < lines.length; i++) {
             var intersect = Phaser.Line.intersects(ray, lines[i]);
             if (intersect) {
-                // Find the closest intersection
+                // cherche l'intersection la plus proche
                 distance =
                     this.game.math.distance(ray.start.x, ray.start.y, intersect.x, intersect.y);
                 if (distance < distanceToWall) {
@@ -420,6 +450,35 @@ level1.getWallIntersection = function(ray) {
 
     return closestIntersection;
 };
+
+
+//fonction qui effectue le saut du joueur
+level1.jump = function () {
+        player.body.velocity.y = -150;
+        jumpCount++;
+}
+
+//fonction qui a pour but de vérifier le nombre de saut restant avant de pouvoir retoucher au sol
+level1.jumpCheck = function ()  { 
+    if(jumpCount == 0  && !player.body.onFloor()){
+        return;
+    }
+    else if (jumpCount < 2) {
+        this.jump();       
+    }
+}
+
+
+//fonction qui change la direction du sprite du joueur dans le but de sauvé de l'espace
+level1.flipPlayer = function () {
+    player.scale.x *=-1;
+}
+
+//redemarre le jeu
+level1.resetPlayer = function () {
+    this.game.state.start("preloader");
+}
+
 
 module.exports = level1;
 
