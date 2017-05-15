@@ -10,12 +10,21 @@ level1.create = function () {
     collisionLayer = map.createLayer('platform');
     interactiveLayer = map.createLayer('interactive');
     
+    // extraction des objet interactifs qui se trouve dans le tile map
     begin = map.objects.evenement.find(o => o.name == 'begin')
     this.beginRect = new Phaser.Rectangle(begin.x, begin.y, begin.width, begin.height);
-    // extraction le l'objet ''sortie'' qui se trouve dans le tile map
-    // Ce qui suis va etre utilisé dans la fonction update pour savoir si le personnage a completé le niveau
+
     exit = map.objects.evenement.find(o => o.name == 'exit');
     this.exitRect = new Phaser.Rectangle(exit.x, exit.y, exit.width, exit.height);
+
+    enemyBegin = map.objects.evenement.find(o => o.name == 'enemyBegin');
+    this.enemyBeginRect = new Phaser.Rectangle(enemyBegin.x, enemyBegin.y, enemyBegin.width, enemyBegin.height);
+
+    enemyStop1 = map.objects.evenement.find(o => o.name == 'enemyStop1');
+    this.enemyStop1Rect = new Phaser.Rectangle(enemyStop1.x, enemyStop1.y, enemyStop1.width, enemyStop1.height);
+
+    enemyEnd = map.objects.evenement.find(o => o.name == 'enemyEnd');
+    this.enemyEndRect = new Phaser.Rectangle(enemyEnd.x, enemyEnd.y, enemyEnd.width, enemyEnd.height);
 
     //charge le sprite du joueur et le positionne au point de depart
     
@@ -51,11 +60,6 @@ level1.create = function () {
 
     // Function de débug pour afficher ou non les rayon de lumiere
     this.game.input.onTap.add(this.toggleRays, this);
-
-
-
-    
-    
     
     collisionLayer.visible = false;
     collisionLayer.debug = false;
@@ -91,8 +95,8 @@ level1.create = function () {
     enemy.anchor.setTo(0.5,0.5);
 
     //positionne l'ennemi a cette position de base
-    enemy.x = 10;
-    enemy.y = 30;
+    enemy.x = 35;
+    enemy.y = 35;
     this.moveEnemy();
     
     foregroundLayer = map.createLayer('foreground'); 
@@ -112,7 +116,6 @@ level1.update = function () {
     this.enableRaycasting();
     this.lineOfSight();
     this.movePlayer();
-    
     
     //si le joueur touche au rectacle exitRect, demarre le prochain niveau
     if (Phaser.Rectangle.containsPoint(this.exitRect, player.position)) {
@@ -178,8 +181,18 @@ level1.movePlayer = function(){
 //fonction qui s'occuppe de l'animation de l'ennemi
 level1.moveEnemy = function () {
     
-    var tween = this.game.add.tween(enemy).to({x: 120 },5000, "Sine.easeInOut", true, 0, -1);
-    tween.yoyo(true,50);
+    var enemyTween1 = this.game.add.tween(enemy).to({x: this.enemyStop1Rect.x },3000, "Sine.easeInOut");
+    var enemyTween2 = this.game.add.tween(enemy).to({x: this.enemyEndRect.x },3000, "Sine.easeInOut");
+    var enemyTween3 = this.game.add.tween(enemy).to({x: this.enemyStop1Rect.x },3000, "Sine.easeInOut");
+    var enemyTween4 = this.game.add.tween(enemy).to({x: this.enemyBeginRect.x },5000, "Sine.easeInOut");
+    enemyTween1.chain(enemyTween2);
+    enemyTween2.chain(enemyTween3);
+    enemyTween3.chain(enemyTween4);
+    enemyTween4.chain(enemyTween1);
+
+
+    enemyTween1.start();
+    
 }
 
 // fonction qui s'occupe de créé un ligne qui vérifie si l'ennemie percois le joueur
