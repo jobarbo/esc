@@ -23,6 +23,8 @@ preloader.preload = function () {
   this.game.load.image('enemy','images/enemy.png');
   this.game.load.image('enemy_death','images/enemy_dead.png');
 
+  this.game.load.image('laser', 'images/laser.png');
+
   //bouton mute sur le menu principale
   this.game.load.spritesheet('mute','images/muteButton.png',28,22);
 

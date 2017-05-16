@@ -1,5 +1,5 @@
 var level1 = {};
-var map, collisionLayer, player, cursors, light, jumpCount, jumpkey, theGame, playerScale, heroLanding, raycasting, hitPlatform, enemyTween, hasFired, playerVisible;
+var map, collisionLayer, player, cursors,laser, light, jumpCount, jumpkey, theGame, playerScale, heroLanding, raycasting, hitPlatform, enemyTween, hasFired, playerVisible, lightBitmap;
 var ray;
 var tileHits = [];
 level1.create = function () {
@@ -52,7 +52,7 @@ level1.create = function () {
     this.bitmap = this.game.add.bitmapData(this.game.width, this.game.height);
     this.bitmap.context.fillStyle = 'rgb(255, 255, 255)';
     this.bitmap.context.strokeStyle = 'rgb(255, 255, 255)';
-    var lightBitmap = this.game.add.image(0, 0, this.bitmap);
+    lightBitmap = this.game.add.image(0, 0, this.bitmap);
     lightBitmap.blendMode = Phaser.blendModes.MULTIPLY;
 
     // cration d'un bitmap pour dessiné les ''rayon''
@@ -97,6 +97,10 @@ level1.create = function () {
     enemy = this.game.add.sprite(enemyBegin.x, enemyBegin.y, 'enemy');
     enemy.anchor.setTo(0.5, 0.5);
 
+    laser = this.game.add.sprite(enemy.x,enemy.y, 'laser');
+    laser.angle=90;
+    
+
     //  Create our Timer
     deathTimer = this.game.time.create(false);
     deathTimer.loop(4000, this.fireDeathRay, this).autoDestroy=true;
@@ -134,6 +138,9 @@ level1.update = function () {
     if (!player.inWorld) {
         this.resetPlayer();
     }
+    console.log(enemy)
+    laser.x = enemy.x+enemy.width/2//-enemy.width/2;
+    laser.y = enemy.y-enemy.height/2//-enemy.height/2;
 
 }
 
@@ -229,8 +236,10 @@ level1.lineOfSight = function () {
         // l'ennemi peut voir le joueur donc sa couleur change
 
         enemy.tint = 0xffaaaa;
+        //this.game.camera.flash(0xff0000, 15500);
         enemyTween.pause();
         playerVisible = true;
+
         
         if(hasFired==false){
             deathTimer.start();
