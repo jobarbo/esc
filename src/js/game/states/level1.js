@@ -1,5 +1,5 @@
 var level1 = {};
-var map, collisionLayer, player, cursors, light, jumpCount, jumpkey, theGame, playerScale, heroLanding, raycasting, hitPlatform, enemyTween, playerVisible;
+var map, collisionLayer, player, cursors, light, jumpCount, jumpkey, theGame, playerScale, heroLanding, raycasting, hitPlatform, enemyTween, hasFired, playerVisible;
 var ray;
 var tileHits = [];
 level1.create = function () {
@@ -92,13 +92,14 @@ level1.create = function () {
     //configure le comportement de la camera
     this.game.camera.follow(player, Phaser.Camera.FOLLOW_PLATFORMER);
 
+    hasFired = false;
     //charge les sprite de l'ennemi
     enemy = this.game.add.sprite(enemyBegin.x, enemyBegin.y, 'enemy');
     enemy.anchor.setTo(0.5, 0.5);
 
     //  Create our Timer
     deathTimer = this.game.time.create(false);
-    deathTimer.loop(2000, this.fireDeathRay, this).autoDestroy=true;
+    deathTimer.loop(4000, this.fireDeathRay, this).autoDestroy=true;
 
     //
     restartTweenTimer = this.game.time.create(false);
@@ -189,15 +190,6 @@ level1.movePlayer = function () {
 //fonction qui s'occuppe de l'animation de l'ennemi
 level1.moveEnemy = function () {
 
-    /*enemyTween1 = this.game.add.tween(enemy).to({x: this.enemyStop1Rect.x },3000, "Sine.easeInOut");
-    enemyTween2 = this.game.add.tween(enemy).to({x: this.enemyEndRect.x },3000, "Sine.easeInOut");
-    enemyTween3 = this.game.add.tween(enemy).to({x: this.enemyStop1Rect.x },3000, "Sine.easeInOut");
-    enemyTween4 = this.game.add.tween(enemy).to({x: this.enemyBeginRect.x },5000, "Sine.easeInOut");
-    enemyTween1.chain(enemyTween2);
-    enemyTween2.chain(enemyTween3);
-    enemyTween3.chain(enemyTween4);
-    enemyTween4.chain(enemyTween1);*/
-
     enemyTween = this.game.add.tween(enemy).to({
             x: this.enemyStop1Rect.x,
             y: this.enemyStop1Rect.y
@@ -221,29 +213,28 @@ level1.moveEnemy = function () {
 
 // fonction qui s'occupe de créé un ligne qui vérifie si l'ennemie percois le joueur
 level1.lineOfSight = function () {
+   console.log(hasFired);
     var ray = new Phaser.Line(enemy.x, enemy.y, player.x, player.y);
     // Vérifie si un mur bloque la vision entre l'ennemi et le joueur
     var intersect = this.getWallIntersection(ray);
     if (intersect) {
         // un mur bloque la vision de l'ennmi donc l'ennmi affiche une couleur par defaut
         enemy.tint = 0xffffff;
-        if(enemyTween._codePaused == true){ 
-            
+        if(enemyTween._codePaused == true){     
             restartTweenTimer.start();
         }   
         playerVisible = false;
-        if(deathTimer.running==true){
-            deathTimer.stop();
-        }
-
+        deathTimer.stop(false);
     } else {
         // l'ennemi peut voir le joueur donc sa couleur change
+
         enemy.tint = 0xffaaaa;
         enemyTween.pause();
         playerVisible = true;
-        //  Set a TimerEvent to occur after 2 seconds
-        deathTimer.start();
-        //console.log('cdeath time');
+        
+        if(hasFired==false){
+            deathTimer.start();
+        }
 
     }
     this.bitmap.dirty = true;
@@ -251,13 +242,17 @@ level1.lineOfSight = function () {
 
 level1.restartEnemyMovement = function() {
     enemyTween.resume();
-    return;
-    
+    if(playerVisible == true && hasFired==true){
+        hasFired=true;
+    }else {
+        hasFired = false;
+    }
 }
 
 level1.fireDeathRay = function () {
     console.log('boom');
-    return;
+    deathTimer.stop(false);
+    hasFired=true;
 }
 
 //fonction qui active le affichage des rayon de lumiere
