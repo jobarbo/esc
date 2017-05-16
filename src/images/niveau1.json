@@ -72,48 +72,48 @@
                  "y":189
                 }, 
                 {
-                 "height":19.3333333333333,
+                 "height":19.3333,
                  "id":10,
                  "name":"switch",
                  "rotation":0,
                  "type":"",
                  "visible":true,
-                 "width":20.6666666666667,
-                 "x":148.666666666667,
-                 "y":211.666666666667
+                 "width":20.6667,
+                 "x":148.667,
+                 "y":211.667
                 }, 
                 {
-                 "height":19.3333333333333,
+                 "height":19.3333,
                  "id":12,
                  "name":"enemyStop1",
                  "rotation":0,
                  "type":"",
                  "visible":true,
                  "width":21,
-                 "x":140,
-                 "y":21.3333333333333
+                 "x":139,
+                 "y":38.3333
                 }, 
                 {
-                 "height":20.3333333333333,
+                 "height":20.3333,
                  "id":13,
                  "name":"enemyBegin",
                  "rotation":0,
                  "type":"",
                  "visible":true,
-                 "width":21.3333333333333,
-                 "x":42.6666666666667,
-                 "y":21.3333333333333
+                 "width":21.3333,
+                 "x":50.3333,
+                 "y":38
                 }, 
                 {
-                 "height":19.3333333333333,
+                 "height":19.3333,
                  "id":14,
                  "name":"enemyEnd",
                  "rotation":0,
                  "type":"",
                  "visible":true,
                  "width":20,
-                 "x":242,
-                 "y":21.6666666666667
+                 "x":210.333,
+                 "y":38.3333
                 }],
          "opacity":1,
          "type":"objectgroup",

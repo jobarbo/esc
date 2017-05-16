@@ -74,8 +74,8 @@
   <object id="1" name="exit" type="exit" x="273" y="189" width="22.5" height="42.482"/>
   <object id="5" name="begin" type="begin" x="21" y="189" width="20.5" height="40"/>
   <object id="10" name="switch" x="148.667" y="211.667" width="20.6667" height="19.3333"/>
-  <object id="12" name="enemyStop1" x="140" y="21.3333" width="21" height="19.3333"/>
-  <object id="13" name="enemyBegin" x="42.6667" y="21.3333" width="21.3333" height="20.3333"/>
-  <object id="14" name="enemyEnd" x="242" y="21.6667" width="20" height="19.3333"/>
+  <object id="12" name="enemyStop1" x="139" y="38.3333" width="21" height="19.3333"/>
+  <object id="13" name="enemyBegin" x="50.3333" y="38" width="21.3333" height="20.3333"/>
+  <object id="14" name="enemyEnd" x="210.333" y="38.3333" width="20" height="19.3333"/>
  </objectgroup>
 </map>
