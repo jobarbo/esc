@@ -3,16 +3,16 @@ var mainMenu = {};
 mainMenu.create = function () {
     //this.game.add.image(0, 0, 'color_bg');
     //city = this.game.add.image(0, 0, 'city_bg');
-    this.game.stage.backgroundColor = '#000000';
     //city.scale.setTo(1.5,1.5);
+    this.game.stage.backgroundColor = '#000000'
     //this.game.add.image(0, 0, 'overlay_bg');
     this.music = this.game.add.audio('menu'); // add the music
     this.music.loop = true; //make it loop
-    this.music.play(); //start the music
+    //this.music.play(); //start the music
 
     //affiche le nom du jeu
-    var nameLabel = this.game.add.text(this.game.width / 2, -50, 'ESC', {
-        font: '50px pixelVector',
+    var nameLabel = this.game.add.text(this.game.width / 2, -50, 'Game Over', {
+        font: '50px pixelSmall',
         fill: '#ffffff',
         align: 'center'
     });
@@ -23,14 +23,14 @@ mainMenu.create = function () {
 
     var text;
     if (this.game.device.desktop) {
-        text = 'Peser sur ESPACE pour démarrer';
+        text = 'Peser sur ESPACE\n pour recommencer';
     } else {
-        text = "Toucher l'écran pour démarrer";
+        text = "Toucher l'écran\n pour recommencer";
     }
 
     //text explicatif sur comment debuter le jeu
     var startLabel = this.game.add.text(this.game.width / 2, this.game.height - 80, text, {
-        font: '15px pixelSmall',
+        font: '15px pixelVector',
         fill: '#ffffff',
         align: 'center'
     });
