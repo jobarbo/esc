@@ -1,5 +1,5 @@
 var level1 = {};
-var map, collisionLayer, player, cursors, laser, light, jumpCount, jumpkey, theGame, playerScale, heroLanding, raycasting, hitPlatform, enemyTween, hasFired, playerVisible, lightBitmap;
+var map, collisionLayer, player, cursors, laser, light, jumpCount, jumpkey, theGame, playerScale, heroLanding, raycasting, mapObjectNameArray, hitPlatform, enemyTween, hasFired, playerVisible, lightBitmap;
 var ray;
 var tileHits = [];
 level1.create = function () {
@@ -12,22 +12,37 @@ level1.create = function () {
     collisionLayer = map.createLayer('platform');
     interactiveLayer = map.createLayer('interactive');
 
-    
+    console.log(map.objects.evenement)
+    mapObjectNameArray = [];
+    mapObjectBasicArray = map.objects.evenement;
+    mapObjectBasicArray.forEach(function (mapObjectBasicArray) {
+        mapObjectNameArray.push(mapObjectBasicArray.name);
+    });
+    console.log(mapObjectNameArray)
     // extraction des objet interactifs qui se trouve dans le tile map
-    begin = map.objects.evenement.find(o => o.name == 'begin')
-    this.beginRect = new Phaser.Rectangle(begin.x, begin.y, begin.width, begin.height);
 
-    exit = map.objects.evenement.find(o => o.name == 'exit');
-    this.exitRect = new Phaser.Rectangle(exit.x, exit.y, exit.width, exit.height);
-
-    enemyBegin = map.objects.evenement.find(o => o.name == 'enemyBegin');
-    this.enemyBeginRect = new Phaser.Rectangle(enemyBegin.x, enemyBegin.y, enemyBegin.width, enemyBegin.height);
-
-    enemyStop1 = map.objects.evenement.find(o => o.name == 'enemyStop1');
-    this.enemyStop1Rect = new Phaser.Rectangle(enemyStop1.x, enemyStop1.y, enemyStop1.width, enemyStop1.height);
-
-    enemyEnd = map.objects.evenement.find(o => o.name == 'enemyEnd');
-    this.enemyEndRect = new Phaser.Rectangle(enemyEnd.x, enemyEnd.y, enemyEnd.width, enemyEnd.height);
+    for (i = 0; i <= mapObjectNameArray.length; i++) {
+        if (mapObjectNameArray[i] == 'begin') {
+            begin = map.objects.evenement[i]
+            this.beginRect = new Phaser.Rectangle(begin.x, begin.y, begin.width, begin.height);
+        }
+        if (mapObjectNameArray[i] == 'exit') {
+            exit = map.objects.evenement[i]
+            this.exitRect = new Phaser.Rectangle(exit.x, exit.y, exit.width, exit.height);
+        }
+        if (mapObjectNameArray[i] == 'enemyBegin') {
+            enemyBegin = map.objects.evenement[i]
+            this.enemyBeginRect = new Phaser.Rectangle(enemyBegin.x, enemyBegin.y, enemyBegin.width, enemyBegin.height);
+        }
+        if (mapObjectNameArray[i] == 'enemyStop1') {
+            enemyStop1 = map.objects.evenement[i]
+            this.enemyStop1Rect = new Phaser.Rectangle(enemyStop1.x, enemyStop1.y, enemyStop1.width, enemyStop1.height);
+        }
+        if (mapObjectNameArray[i] == 'enemyEnd') {
+            enemyEnd = map.objects.evenement[i]
+            this.enemyEndRect = new Phaser.Rectangle(enemyEnd.x, enemyEnd.y, enemyEnd.width, enemyEnd.height);
+        }
+    }
 
     //charge le sprite du joueur et le positionne au point de depart
 
@@ -143,8 +158,8 @@ level1.update = function () {
     this.movePlayer();
     if (hasFired == true) {
         laser.rotation = this.game.physics.arcade.moveToXY(laser, player.x, player.y, 60, 150);
-        
-        
+
+
     } else {
         laser.x = enemy.x;
         laser.y = enemy.y;
@@ -277,7 +292,7 @@ level1.restartEnemyMovement = function () {
 
 level1.fireDeathRay = function () {
     deathTimer.stop(false);
-    laser.visible=true;
+    laser.visible = true;
     hasFired = true;
 }
 
@@ -530,7 +545,7 @@ level1.getWallIntersection = function (ray) {
     return closestIntersection;
 };
 
-level1.collisionHandler = function(){
+level1.collisionHandler = function () {
     player.kill();
     laser.visible = false;
     this.gameOver();
@@ -563,7 +578,7 @@ level1.gameOver = function () {
     this.game.state.start("gameOver");
 }
 
-level1.render = function (){
+level1.render = function () {
 
 }
 

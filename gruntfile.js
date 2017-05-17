@@ -114,7 +114,7 @@ module.exports = function (grunt) {
       options: {
         assets: ['audio/**', 'images/**', 'js/**', 'style/**'],
         baseDir: './build/',
-        deleteOriginals: true,
+        deleteOriginals: false,
         length: 5
       },
       files: {
@@ -230,7 +230,7 @@ module.exports = function (grunt) {
     'copy:audio',
     'copy:phaserArcadeMin',
     'copy:phaserP2Min',
-    'cacheBust',
+    //'cacheBust',
     'connect',
     'open',
     'watch'
