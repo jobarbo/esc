@@ -13,7 +13,8 @@ mainMenu.create = function () {
     //affiche le nom du jeu
     var nameLabel = this.game.add.text(this.game.width / 2, -50, 'Game Over', {
         font: '50px pixelSmall',
-        fill: '#ffffff'
+        fill: '#ffffff',
+        align: 'center'
     });
     nameLabel.anchor.setTo(0.5, 0.5);
     this.game.add.tween(nameLabel).to({
@@ -31,7 +32,7 @@ mainMenu.create = function () {
     var startLabel = this.game.add.text(this.game.width / 2, this.game.height - 80, text, {
         font: '15px pixelVector',
         fill: '#ffffff',
-        align: "center"
+        align: 'center'
     });
     startLabel.anchor.setTo(0.5, 0.5);
 

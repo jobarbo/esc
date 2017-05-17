@@ -8,12 +8,13 @@ mainMenu.create = function () {
     //this.game.add.image(0, 0, 'overlay_bg');
     this.music = this.game.add.audio('menu'); // add the music
     this.music.loop = true; //make it loop
-    //this.music.play(); //start the music
+    this.music.play(); //start the music
 
     //affiche le nom du jeu
     var nameLabel = this.game.add.text(this.game.width / 2, -50, 'ESC', {
         font: '50px pixelVector',
-        fill: '#ffffff'
+        fill: '#ffffff',
+        align: 'center'
     });
     nameLabel.anchor.setTo(0.5, 0.5);
     this.game.add.tween(nameLabel).to({
@@ -30,7 +31,8 @@ mainMenu.create = function () {
     //text explicatif sur comment debuter le jeu
     var startLabel = this.game.add.text(this.game.width / 2, this.game.height - 80, text, {
         font: '15px pixelSmall',
-        fill: '#ffffff'
+        fill: '#ffffff',
+        align: 'center'
     });
     startLabel.anchor.setTo(0.5, 0.5);
 
