@@ -5,7 +5,7 @@ preloader.preload = function () {
 
   //ajoute un libelle qui indique le chargement dans le canvas
   var loadingLabel = this.game.add.text(this.game.width / 2, 100, 'chargement...', {
-    font: '25px pixel',
+    font: '25px pixelSmall',
     fill: '#ffffff'
   });
   loadingLabel.anchor.setTo(0.5, 0.5);
@@ -22,6 +22,8 @@ preloader.preload = function () {
   //et le reste des images : enemy
   this.game.load.image('enemy','images/enemy.png');
   this.game.load.image('enemy_death','images/enemy_dead.png');
+
+  this.game.load.image('laser', 'images/laser.png');
 
   //bouton mute sur le menu principale
   this.game.load.spritesheet('mute','images/muteButton.png',28,22);
