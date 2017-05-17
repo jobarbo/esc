@@ -12,7 +12,7 @@ level1.create = function () {
     collisionLayer = map.createLayer('platform');
     interactiveLayer = map.createLayer('interactive');
 
-
+    
     // extraction des objet interactifs qui se trouve dans le tile map
     begin = map.objects.evenement.find(o => o.name == 'begin')
     this.beginRect = new Phaser.Rectangle(begin.x, begin.y, begin.width, begin.height);
@@ -103,15 +103,17 @@ level1.create = function () {
 
     laser = this.game.add.sprite(enemy.x, enemy.y, 'laser');
     laser.anchor.setTo(0.5);
+    this.game.physics.arcade.enable(laser);
+    laser.body.enable = true;
 
     //  active les physique pour le laser
     this.game.physics.enable(laser, Phaser.Physics.ARCADE);
     laser.body.allowRotation = false;
-
+    laser.visible = false;
 
     //  Create our Timer
     deathTimer = this.game.time.create(false);
-    deathTimer.loop(4000, this.fireDeathRay, this).autoDestroy = true;
+    deathTimer.loop(1000, this.fireDeathRay, this).autoDestroy = true;
 
     //
     restartTweenTimer = this.game.time.create(false);
@@ -126,17 +128,13 @@ level1.create = function () {
     cursors = this.game.input.keyboard.createCursorKeys();
 
     heroLanding = false;
-    console.log(laser);
-    console.log(player);
+
 
 }
 
 level1.update = function () {
 
-
-    //console.log(this.game.physics.arcade);
-
-
+    this.game.physics.arcade.overlap(laser, player, this.collisionHandler, null, this);
     // creation d'une variable qui contien false mais qui devien true lors de la collision entre le joueur et les plateforme
     hitPlatform = this.game.physics.arcade.collide(player, collisionLayer);
 
@@ -146,18 +144,18 @@ level1.update = function () {
     if (hasFired == true) {
         laser.rotation = this.game.physics.arcade.moveToXY(laser, player.x, player.y, 60, 150);
         
+        
     } else {
         laser.x = enemy.x;
         laser.y = enemy.y;
     }
-    //laser.rotation = this.game.physics.arcade.angleBetween(laser, player);
     //si le joueur touche au rectacle exitRect, demarre le prochain niveau
     if (Phaser.Rectangle.containsPoint(this.exitRect, player.position)) {
-        this.resetPlayer();
+        this.gameOver();
     }
     //si le joueur n'est plus dans le monde de jeu, affiche l'écran game Over
     if (!player.inWorld) {
-        this.resetPlayer();
+        this.gameOver();
     }
 
 
@@ -240,7 +238,6 @@ level1.moveEnemy = function () {
 
 // fonction qui s'occupe de créé un ligne qui vérifie si l'ennemie percois le joueur
 level1.lineOfSight = function () {
-    console.log(hasFired);
     var ray = new Phaser.Line(enemy.x, enemy.y, player.x, player.y);
     // Vérifie si un mur bloque la vision entre l'ennemi et le joueur
     var intersect = this.getWallIntersection(ray);
@@ -279,8 +276,8 @@ level1.restartEnemyMovement = function () {
 }
 
 level1.fireDeathRay = function () {
-    console.log('boom');
     deathTimer.stop(false);
+    laser.visible=true;
     hasFired = true;
 }
 
@@ -533,6 +530,12 @@ level1.getWallIntersection = function (ray) {
     return closestIntersection;
 };
 
+level1.collisionHandler = function(){
+    player.kill();
+    laser.visible = false;
+    this.gameOver();
+
+}
 
 //fonction qui effectue le saut du joueur
 level1.jump = function () {
@@ -556,9 +559,12 @@ level1.flipPlayer = function () {
 }
 
 //redemarre le jeu
-level1.resetPlayer = function () {
-    this.game.state.start("preloader");
+level1.gameOver = function () {
+    this.game.state.start("gameOver");
 }
 
+level1.render = function (){
+
+}
 
 module.exports = level1;

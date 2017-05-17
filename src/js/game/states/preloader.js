@@ -5,7 +5,7 @@ preloader.preload = function () {
 
   //ajoute un libelle qui indique le chargement dans le canvas
   var loadingLabel = this.game.add.text(this.game.width / 2, 100, 'chargement...', {
-    font: '25px pixel',
+    font: '25px pixelSmall',
     fill: '#ffffff'
   });
   loadingLabel.anchor.setTo(0.5, 0.5);
