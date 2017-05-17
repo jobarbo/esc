@@ -6,10 +6,12 @@ level1.create = function () {
     //configure la tilemap
     map = this.game.add.tilemap('niveau1');
     map.addTilesetImage('pixel', 'pixel');
+    fargroundLayer = map.createLayer('farground');
     backgroundLayer = map.createLayer('background');
     falseCollisionLayer = map.createLayer('platform');
     collisionLayer = map.createLayer('platform');
     interactiveLayer = map.createLayer('interactive');
+
 
     // extraction des objet interactifs qui se trouve dans le tile map
     begin = map.objects.evenement.find(o => o.name == 'begin')
@@ -98,8 +100,11 @@ level1.create = function () {
     enemy.anchor.setTo(0.5, 0.5);
 
     laser = this.game.add.sprite(enemy.x,enemy.y, 'laser');
-    laser.angle=90;
-    
+
+    //  active les physique pour le laser
+    this.game.physics.enable(laser, Phaser.Physics.ARCADE);
+    laser.body.allowRotation = false;
+
 
     //  Create our Timer
     deathTimer = this.game.time.create(false);
@@ -123,6 +128,9 @@ level1.create = function () {
 
 level1.update = function () {
 
+    laser.x = enemy.x//+enemy.width/2//-enemy.width/2;
+    laser.y = enemy.y//-enemy.height/2//-enemy.height/2;
+    
     // creation d'une variable qui contien false mais qui devien true lors de la collision entre le joueur et les plateforme
     hitPlatform = this.game.physics.arcade.collide(player, collisionLayer);
 
@@ -130,6 +138,7 @@ level1.update = function () {
     this.lineOfSight();
     this.movePlayer();
 
+    laser.rotation = this.game.physics.arcade.angleBetween(laser, player);
     //si le joueur touche au rectacle exitRect, demarre le prochain niveau
     if (Phaser.Rectangle.containsPoint(this.exitRect, player.position)) {
         this.resetPlayer();
@@ -138,9 +147,8 @@ level1.update = function () {
     if (!player.inWorld) {
         this.resetPlayer();
     }
-    console.log(enemy)
-    laser.x = enemy.x+enemy.width/2//-enemy.width/2;
-    laser.y = enemy.y-enemy.height/2//-enemy.height/2;
+   
+
 
 }
 
