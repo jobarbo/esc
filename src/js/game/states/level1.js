@@ -1,5 +1,5 @@
 var level1 = {};
-var map, collisionLayer, player, cursors,laser, light, jumpCount, jumpkey, theGame, playerScale, heroLanding, raycasting, hitPlatform, enemyTween, hasFired, playerVisible, lightBitmap;
+var map, collisionLayer, player, cursors, laser, light, jumpCount, jumpkey, theGame, playerScale, heroLanding, raycasting, hitPlatform, enemyTween, hasFired, playerVisible, lightBitmap;
 var ray;
 var tileHits = [];
 level1.create = function () {
@@ -47,6 +47,8 @@ level1.create = function () {
     this.game.physics.arcade.enable(player);
     player.body.collideWorldBounds = false;
     player.body.gravity.y = 300;
+
+    //sers a inversé le sprite lors du changement de direction du joueur
     player.scale.setTo(1, 1);
     playerScale = player.scale.x;
 
@@ -97,9 +99,10 @@ level1.create = function () {
     hasFired = false;
     //charge les sprite de l'ennemi
     enemy = this.game.add.sprite(enemyBegin.x, enemyBegin.y, 'enemy');
-    enemy.anchor.setTo(0.5, 0.5);
+    enemy.anchor.setTo(0.5);
 
-    laser = this.game.add.sprite(enemy.x,enemy.y, 'laser');
+    laser = this.game.add.sprite(enemy.x, enemy.y, 'laser');
+    laser.anchor.setTo(0.5);
 
     //  active les physique pour le laser
     this.game.physics.enable(laser, Phaser.Physics.ARCADE);
@@ -108,12 +111,12 @@ level1.create = function () {
 
     //  Create our Timer
     deathTimer = this.game.time.create(false);
-    deathTimer.loop(4000, this.fireDeathRay, this).autoDestroy=true;
+    deathTimer.loop(4000, this.fireDeathRay, this).autoDestroy = true;
 
     //
     restartTweenTimer = this.game.time.create(false);
-    restartTweenTimer.loop(2000, this.restartEnemyMovement,this).autoDestroy=true;
-    
+    restartTweenTimer.loop(2000, this.restartEnemyMovement, this).autoDestroy = true;
+
 
     this.moveEnemy();
 
@@ -123,22 +126,31 @@ level1.create = function () {
     cursors = this.game.input.keyboard.createCursorKeys();
 
     heroLanding = false;
+    console.log(laser);
+    console.log(player);
 
 }
 
 level1.update = function () {
 
-    laser.x = enemy.x//+enemy.width/2//-enemy.width/2;
-    laser.y = enemy.y//-enemy.height/2//-enemy.height/2;
-    
+
+    //console.log(this.game.physics.arcade);
+
+
     // creation d'une variable qui contien false mais qui devien true lors de la collision entre le joueur et les plateforme
     hitPlatform = this.game.physics.arcade.collide(player, collisionLayer);
 
     this.enableRaycasting();
     this.lineOfSight();
     this.movePlayer();
-
-    laser.rotation = this.game.physics.arcade.angleBetween(laser, player);
+    if (hasFired == true) {
+        laser.rotation = this.game.physics.arcade.moveToXY(laser, player.x, player.y, 60, 150);
+        
+    } else {
+        laser.x = enemy.x;
+        laser.y = enemy.y;
+    }
+    //laser.rotation = this.game.physics.arcade.angleBetween(laser, player);
     //si le joueur touche au rectacle exitRect, demarre le prochain niveau
     if (Phaser.Rectangle.containsPoint(this.exitRect, player.position)) {
         this.resetPlayer();
@@ -147,7 +159,7 @@ level1.update = function () {
     if (!player.inWorld) {
         this.resetPlayer();
     }
-   
+
 
 
 }
@@ -222,22 +234,22 @@ level1.moveEnemy = function () {
             y: this.enemyBeginRect.y
         }, 3000, "Sine.easeInOut").loop(true);
 
-    
+
     enemyTween.start();
 }
 
 // fonction qui s'occupe de créé un ligne qui vérifie si l'ennemie percois le joueur
 level1.lineOfSight = function () {
-   console.log(hasFired);
+    console.log(hasFired);
     var ray = new Phaser.Line(enemy.x, enemy.y, player.x, player.y);
     // Vérifie si un mur bloque la vision entre l'ennemi et le joueur
     var intersect = this.getWallIntersection(ray);
     if (intersect) {
         // un mur bloque la vision de l'ennmi donc l'ennmi affiche une couleur par defaut
         enemy.tint = 0xffffff;
-        if(enemyTween._codePaused == true){     
+        if (enemyTween._codePaused == true) {
             restartTweenTimer.start();
-        }   
+        }
         playerVisible = false;
         deathTimer.stop(false);
     } else {
@@ -248,8 +260,8 @@ level1.lineOfSight = function () {
         enemyTween.pause();
         playerVisible = true;
 
-        
-        if(hasFired==false){
+
+        if (hasFired == false) {
             deathTimer.start();
         }
 
@@ -257,11 +269,11 @@ level1.lineOfSight = function () {
     this.bitmap.dirty = true;
 }
 
-level1.restartEnemyMovement = function() {
+level1.restartEnemyMovement = function () {
     enemyTween.resume();
-    if(playerVisible == true && hasFired==true){
-        hasFired=true;
-    }else {
+    if (playerVisible == true && hasFired == true) {
+        hasFired = true;
+    } else {
         hasFired = false;
     }
 }
@@ -269,7 +281,7 @@ level1.restartEnemyMovement = function() {
 level1.fireDeathRay = function () {
     console.log('boom');
     deathTimer.stop(false);
-    hasFired=true;
+    hasFired = true;
 }
 
 //fonction qui active le affichage des rayon de lumiere
