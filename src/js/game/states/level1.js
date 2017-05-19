@@ -1,10 +1,19 @@
 var level1 = {};
+var currentLevel;
 var map, collisionLayer, player, cursors, laser, light, jumpCount, jumpkey, theGame, playerScale, heroLanding, raycasting, mapObjectNameArray, hitPlatform, enemyTween, hasFired, playerVisible, lightBitmap;
 var ray;
 var tileHits = [];
 level1.create = function () {
+    currentLevel = this.game.global.levelID;
+    console.log(currentLevel);
     //configure la tilemap
-    map = this.game.add.tilemap('niveau1');
+    if(currentLevel == 1){
+        map = this.game.add.tilemap('niveau1');
+    }
+    else{
+        map = this.game.add.tilemap('niveautest');
+    }
+    
     map.addTilesetImage('pixel', 'pixel');
     fargroundLayer = map.createLayer('farground');
     backgroundLayer = map.createLayer('background');
@@ -15,10 +24,8 @@ level1.create = function () {
     mapObjectNameArray = [];
     mapObjectBasicArray = map.objects.evenement;
     mapObjectBasicArray.forEach(function (mapObjectBasicArray) {
-        //a moi meme: check donc si tu peux leur créé un id pis l'envoyer
         mapObjectNameArray.push(mapObjectBasicArray.name);
     });
-        console.log(map);
     // extraction des objet interactifs qui se trouve dans le tile map
 
     for (i = 0; i <= mapObjectNameArray.length; i++) {
@@ -166,7 +173,8 @@ level1.update = function () {
     }
     //si le joueur touche au rectacle exitRect, demarre le prochain niveau
     if (Phaser.Rectangle.containsPoint(this.exitRect, player.position)) {
-        this.gameOver();
+        //this.changeLevel(currentLevel+1);
+        //console.log(levelID+1)
     }
     //si le joueur n'est plus dans le monde de jeu, affiche l'écran game Over
     if (!player.inWorld) {
@@ -175,6 +183,11 @@ level1.update = function () {
 
 
 
+}
+
+level1.changeLevel = function (nextLevelID) {
+    this.game.global.levelID = nextLevelID
+    this.game.state.start("level1");
 }
 
 //fonction qui s'occupe de l'animation du joueur
