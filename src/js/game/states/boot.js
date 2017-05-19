@@ -3,7 +3,7 @@ var properties = require('../properties');
 var boot = {};
 
 boot.init = function () {
-  this.game.scale.scaleMode = Phaser.ScaleManager.NO_SCALE; 
+  this.game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL; 
   //centre le jeu sur l'ecran de l'appareil
   this.game.scale.pageAlignHorizontally = true;
   this.game.scale.pageAlignVertically = true;
