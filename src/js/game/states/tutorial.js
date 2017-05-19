@@ -27,7 +27,7 @@ tutorial.create = function () {
     }
 
     //affiche le nom du jeu
-    var firstText = this.game.add.text(text1.x, text1.y, '1. Utiliser la touche haut\n pour sauter\n2. gauche/droite pour naviguer', {
+    var firstText = this.game.add.text(text1.x, text1.y, '1. Utiliser la touche haut\n pour sauter. (deux fois!)\n2. gauche/droite pour naviguer', {
         font: '9px smallest',
         fill: '#0000',
         align: 'left'
@@ -70,7 +70,6 @@ tutorial.returnToMainTitle = function(){
 }
 
 tutorial.mouseOver = function (textLabel) {
-    console.log('hover')
     textLabel.fill = "#ffff44";
     this.game.canvas.style.cursor = 'pointer';
 }
