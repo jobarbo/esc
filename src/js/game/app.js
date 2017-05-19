@@ -15,6 +15,9 @@ var states = {
 };
 
 var game = new Phaser.Game(properties.size.x, properties.size.y, Phaser.AUTO, '', null, false, false);
+game.global = {
+  levelID: 1
+}
 
 // Automatically register each state.
 _.each(states, function(state, key) {
