@@ -10,6 +10,7 @@ var states = {
   mainMenu: require('./states/mainMenu.js'),
   gameOver: require('./states/gameOver.js'),
   levelSelector: require('./states/levelSelector.js'),
+  tutorial: require('./states/tutorial.js'),
   level1: require('./states/level1.js')
 };
 

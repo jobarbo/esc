@@ -3,7 +3,7 @@ var properties = require('../properties');
 var boot = {};
 
 boot.init = function () {
-  this.game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL; 
+  this.game.scale.scaleMode = Phaser.ScaleManager.NO_SCALE; 
   //centre le jeu sur l'ecran de l'appareil
   this.game.scale.pageAlignHorizontally = true;
   this.game.scale.pageAlignVertically = true;
@@ -25,6 +25,7 @@ boot.create = function () {
   
   //initialisation des physiques complexe
   this.game.physics.startSystem(Phaser.Physics.ARCADE);
+  Phaser.Canvas.setImageRenderingCrisp(this.game.canvas)
   this.game.renderer.renderSession.roundPixels = true;
 
   //ajoute une couleur a la page pour cacher les espace blanc

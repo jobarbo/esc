@@ -12,13 +12,13 @@ level1.create = function () {
     collisionLayer = map.createLayer('platform');
     interactiveLayer = map.createLayer('interactive');
 
-    console.log(map.objects.evenement)
     mapObjectNameArray = [];
     mapObjectBasicArray = map.objects.evenement;
     mapObjectBasicArray.forEach(function (mapObjectBasicArray) {
+        //a moi meme: check donc si tu peux leur créé un id pis l'envoyer
         mapObjectNameArray.push(mapObjectBasicArray.name);
     });
-    console.log(mapObjectNameArray)
+        console.log(map);
     // extraction des objet interactifs qui se trouve dans le tile map
 
     for (i = 0; i <= mapObjectNameArray.length; i++) {

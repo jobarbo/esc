@@ -28,11 +28,13 @@ preloader.preload = function () {
   //bouton mute sur le menu principale
   this.game.load.spritesheet('mute','images/muteButton.png',28,22);
 
-  //preload tilemap
+  //preload all tilemap
+  this.game.load.tilemap('tutorial', 'images/tutorial.json', null, Phaser.Tilemap.TILED_JSON);
   this.game.load.tilemap('niveau1', 'images/niveau1.json', null, Phaser.Tilemap.TILED_JSON);
 
   //  Next we load the tileset. This is just an image, loaded in via the normal way we load images:
   this.game.load.image('pixel','images/pixel.png');
+  this.game.load.image('pixelui','images/pixelui.png');
 
   //charge le background pour le menu State
   this.game.load.image('city_bg','images/cyberpunk-street.png');
