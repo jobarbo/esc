@@ -5,7 +5,6 @@ var ray;
 var tileHits = [];
 level1.create = function () {
     currentLevel = this.game.global.levelID;
-    console.log(currentLevel);
     //configure la tilemap
     if(currentLevel == 1){
         map = this.game.add.tilemap('niveau1');
@@ -173,7 +172,7 @@ level1.update = function () {
     }
     //si le joueur touche au rectacle exitRect, demarre le prochain niveau
     if (Phaser.Rectangle.containsPoint(this.exitRect, player.position)) {
-        //this.changeLevel(currentLevel+1);
+        this.changeLevel(currentLevel+1);
         //console.log(levelID+1)
     }
     //si le joueur n'est plus dans le monde de jeu, affiche l'écran game Over
