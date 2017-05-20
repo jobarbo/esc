@@ -25,6 +25,7 @@ boot.create = function () {
   
   //initialisation des physiques complexe
   this.game.physics.startSystem(Phaser.Physics.ARCADE);
+  Phaser.Canvas.setImageRenderingCrisp(this.game.canvas)
   this.game.renderer.renderSession.roundPixels = true;
 
   //ajoute une couleur a la page pour cacher les espace blanc
@@ -33,7 +34,7 @@ boot.create = function () {
   if(!this.game.device.desktop) {
 
     //initialise le max et le min des dimensions du jeu
-    this.game.scale.setMinMax(game.width/2,game.height/2,game.width*2,game.height*2);
+    this.game.scale.setMinMax(this.game.width/2,this.game.height/2,this.game.width*2,this.game.height*2);
 
   }
 

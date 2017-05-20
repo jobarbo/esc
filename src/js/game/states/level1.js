@@ -1,10 +1,19 @@
 var level1 = {};
-var map, collisionLayer, player, cursors, laser, light, jumpCount, jumpkey, theGame, playerScale, heroLanding, raycasting, hitPlatform, enemyTween, hasFired, playerVisible, lightBitmap;
+var currentLevel;
+var map, collisionLayer, player, cursors, hourGlassVariable, laser, rayCastTimer, jumpCount, jumpkey, theGame, playerScale,levelText, helpTextTween, helpText, heroLanding, raycasting, mapObjectNameArray, hitPlatform, enemyTween, hasFired, playerVisible, lightBitmap;
 var ray;
 var tileHits = [];
 level1.create = function () {
+    currentLevel = this.game.global.levelID;
     //configure la tilemap
-    map = this.game.add.tilemap('niveau1');
+    if (currentLevel == 1) {
+        map = this.game.add.tilemap('niveau1');
+        levelText = '1. appuyez sur la touche haut pour sauter.\n(Deux fois pour un double saut)\n2. gauche/droite pour naviguer';
+    } else {
+        map = this.game.add.tilemap('niveau2');
+        levelText = 'Ne vous faites pas voir pas les rayon du sentinel';
+    }
+
     map.addTilesetImage('pixel', 'pixel');
     fargroundLayer = map.createLayer('farground');
     backgroundLayer = map.createLayer('background');
@@ -12,22 +21,35 @@ level1.create = function () {
     collisionLayer = map.createLayer('platform');
     interactiveLayer = map.createLayer('interactive');
 
-    
+    mapObjectNameArray = [];
+    mapObjectBasicArray = map.objects.evenement;
+    mapObjectBasicArray.forEach(function (mapObjectBasicArray) {
+        mapObjectNameArray.push(mapObjectBasicArray.name);
+    });
     // extraction des objet interactifs qui se trouve dans le tile map
-    begin = map.objects.evenement.find(o => o.name == 'begin')
-    this.beginRect = new Phaser.Rectangle(begin.x, begin.y, begin.width, begin.height);
-
-    exit = map.objects.evenement.find(o => o.name == 'exit');
-    this.exitRect = new Phaser.Rectangle(exit.x, exit.y, exit.width, exit.height);
-
-    enemyBegin = map.objects.evenement.find(o => o.name == 'enemyBegin');
-    this.enemyBeginRect = new Phaser.Rectangle(enemyBegin.x, enemyBegin.y, enemyBegin.width, enemyBegin.height);
-
-    enemyStop1 = map.objects.evenement.find(o => o.name == 'enemyStop1');
-    this.enemyStop1Rect = new Phaser.Rectangle(enemyStop1.x, enemyStop1.y, enemyStop1.width, enemyStop1.height);
-
-    enemyEnd = map.objects.evenement.find(o => o.name == 'enemyEnd');
-    this.enemyEndRect = new Phaser.Rectangle(enemyEnd.x, enemyEnd.y, enemyEnd.width, enemyEnd.height);
+    hourGlassVariable = 0;
+    for (i = 0; i <= mapObjectNameArray.length; i++) {
+        if (mapObjectNameArray[i] == 'begin') {
+            begin = map.objects.evenement[i]
+            this.beginRect = new Phaser.Rectangle(begin.x, begin.y, begin.width, begin.height);
+        }
+        if (mapObjectNameArray[i] == 'exit') {
+            exit = map.objects.evenement[i]
+            this.exitRect = new Phaser.Rectangle(exit.x, exit.y, exit.width, exit.height);
+        }
+        if (mapObjectNameArray[i] == 'enemyBegin') {
+            enemyBegin = map.objects.evenement[i]
+            this.enemyBeginRect = new Phaser.Rectangle(enemyBegin.x, enemyBegin.y, enemyBegin.width, enemyBegin.height);
+        }
+        if (mapObjectNameArray[i] == 'enemyStop1') {
+            enemyStop1 = map.objects.evenement[i]
+            this.enemyStop1Rect = new Phaser.Rectangle(enemyStop1.x, enemyStop1.y, enemyStop1.width, enemyStop1.height);
+        }
+        if (mapObjectNameArray[i] == 'enemyEnd') {
+            enemyEnd = map.objects.evenement[i]
+            this.enemyEndRect = new Phaser.Rectangle(enemyEnd.x, enemyEnd.y, enemyEnd.width, enemyEnd.height);
+        }
+    }
 
     //charge le sprite du joueur et le positionne au point de depart
 
@@ -52,15 +74,16 @@ level1.create = function () {
     player.scale.setTo(1, 1);
     playerScale = player.scale.x;
 
+    foregroundLayer = map.createLayer('foreground');
     // creation d'une texture bitmap qui va dessiné les cones ''lumiere''
-    this.bitmap = this.game.add.bitmapData(this.game.width, this.game.height);
+    this.bitmap = this.game.add.bitmapData(map.widthInPixels, map.heightInPixels);
     this.bitmap.context.fillStyle = 'rgb(255, 255, 255)';
     this.bitmap.context.strokeStyle = 'rgb(255, 255, 255)';
     lightBitmap = this.game.add.image(0, 0, this.bitmap);
     lightBitmap.blendMode = Phaser.blendModes.MULTIPLY;
 
     // cration d'un bitmap pour dessiné les ''rayon''
-    this.rayBitmap = this.game.add.bitmapData(this.game.width, this.game.height);
+    this.rayBitmap = this.game.add.bitmapData(map.widthInPixels, map.heightInPixels);
     this.rayBitmapImage = this.game.add.image(0, 0, this.rayBitmap);
     this.rayBitmapImage.visible = false;
 
@@ -80,7 +103,6 @@ level1.create = function () {
     collisionData = collisionLayer.layer.data;
     collisionChildData = [];
 
-
     for (i = 0; i < collisionData.length; i++) {
         for (z = 0; z < collisionData[i].length; z++) {
             if (collisionData[i][z].canCollide) {
@@ -88,6 +110,7 @@ level1.create = function () {
             }
         }
     }
+
 
     //Configure le compteur de saut pour créé un doule saut
     jumpCount = 0;
@@ -119,15 +142,23 @@ level1.create = function () {
     restartTweenTimer = this.game.time.create(false);
     restartTweenTimer.loop(2000, this.restartEnemyMovement, this).autoDestroy = true;
 
+    rayCastTimer = this.game.time.create();
+    rayCastTimer.loop(35, this.enableRaycasting, this);
+    rayCastTimer.start();
+
+    tutorialTextTimer = this.game.time.create();
+    tutorialTextTimer.add(1500, this.showTutorialText, this);
+    tutorialTextTimer.start()
 
     this.moveEnemy();
 
-    foregroundLayer = map.createLayer('foreground');
+
 
     //  les controles du jeu
     cursors = this.game.input.keyboard.createCursorKeys();
 
     heroLanding = false;
+
 
 
 }
@@ -138,20 +169,21 @@ level1.update = function () {
     // creation d'une variable qui contien false mais qui devien true lors de la collision entre le joueur et les plateforme
     hitPlatform = this.game.physics.arcade.collide(player, collisionLayer);
 
-    this.enableRaycasting();
     this.lineOfSight();
     this.movePlayer();
+
     if (hasFired == true) {
         laser.rotation = this.game.physics.arcade.moveToXY(laser, player.x, player.y, 60, 150);
-        
-        
+
+
     } else {
         laser.x = enemy.x;
         laser.y = enemy.y;
     }
     //si le joueur touche au rectacle exitRect, demarre le prochain niveau
     if (Phaser.Rectangle.containsPoint(this.exitRect, player.position)) {
-        this.gameOver();
+        this.changeLevel(currentLevel + 1);
+
     }
     //si le joueur n'est plus dans le monde de jeu, affiche l'écran game Over
     if (!player.inWorld) {
@@ -161,6 +193,34 @@ level1.update = function () {
 
 
 }
+
+level1.changeLevel = function (nextLevelID) {
+    this.game.global.levelID = nextLevelID
+    this.game.state.start("level1");
+}
+
+level1.showTutorialText = function () {
+    helpText = this.game.add.text(160, 40, levelText, {
+        font: '11px pixelSmall',
+        fill: '#0000',
+        align: 'left'
+    });
+
+    helpText.anchor.set(0.5);
+    helpText.alpha = 0;
+    showHelpTextTween = this.game.add.tween(helpText)
+        .to({
+            alpha: 1
+        }, 3000, "Sine.easeInOut")
+        .to({
+            alpha: 0
+        }, 3000, "Sine.easeInOut", 3000, true);
+
+    showHelpTextTween.start();
+
+
+}
+
 
 //fonction qui s'occupe de l'animation du joueur
 level1.movePlayer = function () {
@@ -253,15 +313,20 @@ level1.lineOfSight = function () {
         // l'ennemi peut voir le joueur donc sa couleur change
 
         enemy.tint = 0xffaaaa;
-        //this.game.camera.flash(0xff0000, 15500);
         enemyTween.pause();
         playerVisible = true;
-
+        
 
         if (hasFired == false) {
             deathTimer.start();
-        }
 
+            hourGlassVariable++;
+            console.log(hourGlassVariable);
+            if(hourGlassVariable==1){
+                this.game.camera.flash(0xff0000, 800);
+            }
+        }
+        
     }
     this.bitmap.dirty = true;
 }
@@ -272,13 +337,16 @@ level1.restartEnemyMovement = function () {
         hasFired = true;
     } else {
         hasFired = false;
+        hourGlassVariable = 0;
     }
 }
 
 level1.fireDeathRay = function () {
+
     deathTimer.stop(false);
-    laser.visible=true;
+    laser.visible = true;
     hasFired = true;
+
 }
 
 //fonction qui active le affichage des rayon de lumiere
@@ -288,14 +356,14 @@ level1.enableRaycasting = function () {
     // Next, fill the entire light bitmap with a dark shadow color.
     // remplis le bitmap de lumiere creer plus tot avec une couleur sombre
     this.bitmap.context.fillStyle = 'rgb(100, 100, 100)';
-    this.bitmap.context.fillRect(0, 0, this.game.width, this.game.height);
+    this.bitmap.context.fillRect(0, 0, map.widthInPixels, map.heightInPixels);
 
     // un tableau qui contient les 4 coin du jeu
     var stageCorners = [
         new Phaser.Point(0, 0),
-        new Phaser.Point(this.game.width, 0),
-        new Phaser.Point(this.game.width, this.game.height),
-        new Phaser.Point(0, this.game.height)
+        new Phaser.Point(map.widthInPixels, 0),
+        new Phaser.Point(map.widthInPixels, map.heightInPixels),
+        new Phaser.Point(0, map.heightInPixels)
     ];
 
 
@@ -343,43 +411,43 @@ level1.enableRaycasting = function () {
                 if (c.y <= enemy.y) {
                     end = new Phaser.Point(enemy.x, 0);
                 } else {
-                    end = new Phaser.Point(enemy.x, this.game.height);
+                    end = new Phaser.Point(enemy.x, map.heightInPixels);
                 }
             } else if (c.y === enemy.y) {
                 // Horizontal lines are a special case
                 if (c.x <= enemy.x) {
                     end = new Phaser.Point(0, enemy.y);
                 } else {
-                    end = new Phaser.Point(this.game.width, enemy.y);
+                    end = new Phaser.Point(map.widthInPixels, enemy.y);
                 }
             } else {
                 // Find the point where the line crosses the stage edge
                 var left = new Phaser.Point(0, b);
-                var right = new Phaser.Point(this.game.width, slope * this.game.width + b);
+                var right = new Phaser.Point(map.widthInPixels, slope * map.widthInPixels + b);
                 var top = new Phaser.Point(-b / slope, 0);
-                var bottom = new Phaser.Point((this.game.height - b) / slope, this.game.height);
+                var bottom = new Phaser.Point((map.heightInPixels - b) / slope, map.heightInPixels);
 
                 // Get the actual intersection point
                 if (c.y <= enemy.y && c.x >= enemy.x) {
-                    if (top.x >= 0 && top.x <= this.game.width) {
+                    if (top.x >= 0 && top.x <= map.widthInPixels) {
                         end = top;
                     } else {
                         end = right;
                     }
                 } else if (c.y <= enemy.y && c.x <= enemy.x) {
-                    if (top.x >= 0 && top.x <= this.game.width) {
+                    if (top.x >= 0 && top.x <= map.widthInPixels) {
                         end = top;
                     } else {
                         end = left;
                     }
                 } else if (c.y >= enemy.y && c.x >= enemy.x) {
-                    if (bottom.x >= 0 && bottom.x <= this.game.width) {
+                    if (bottom.x >= 0 && bottom.x <= map.widthInPixels) {
                         end = bottom;
                     } else {
                         end = right;
                     }
                 } else if (c.y >= enemy.y && c.x <= enemy.x) {
-                    if (bottom.x >= 0 && bottom.x <= this.game.width) {
+                    if (bottom.x >= 0 && bottom.x <= map.widthInPixels) {
                         end = bottom;
                     } else {
                         end = left;
@@ -395,6 +463,9 @@ level1.enableRaycasting = function () {
                 // si oui, le point de contact est ajouté au tableau des point
                 points.push(intersect);
 
+            } else {
+                // Nothing blocked the ray
+                points.push(ray.end);
             }
 
         }
@@ -463,7 +534,7 @@ level1.enableRaycasting = function () {
     this.bitmap.context.fill();
 
     // dessine chacun des rayon dans le rayBitmap
-    this.rayBitmap.context.clearRect(0, 0, this.game.width, this.game.height);
+    this.rayBitmap.context.clearRect(0, 0, map.widthInPixels, map.heightInPixels);
     this.rayBitmap.context.beginPath();
     this.rayBitmap.context.strokeStyle = 'rgb(255, 255, 255)';
     this.rayBitmap.context.fillStyle = 'rgb(255, 255, 255)';
@@ -530,7 +601,7 @@ level1.getWallIntersection = function (ray) {
     return closestIntersection;
 };
 
-level1.collisionHandler = function(){
+level1.collisionHandler = function () {
     player.kill();
     laser.visible = false;
     this.gameOver();
@@ -563,7 +634,7 @@ level1.gameOver = function () {
     this.game.state.start("gameOver");
 }
 
-level1.render = function (){
+level1.render = function () {
 
 }
 
