@@ -32,6 +32,7 @@ preloader.preload = function () {
   this.game.load.tilemap('tutorial', 'images/tutorial.json', null, Phaser.Tilemap.TILED_JSON);
   this.game.load.tilemap('niveau1', 'images/niveau1.json', null, Phaser.Tilemap.TILED_JSON);
   this.game.load.tilemap('niveau2', 'images/niveau2.json', null, Phaser.Tilemap.TILED_JSON);
+  this.game.load.tilemap('levelSelect', 'images/levelSelect.json', null, Phaser.Tilemap.TILED_JSON);
 
   //preload particle
   this.game.load.image('splat','images/redParticle.jpeg');

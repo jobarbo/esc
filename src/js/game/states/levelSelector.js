@@ -2,20 +2,29 @@ var levelSelector = {};
 
 levelSelector.create = function () {
 
-    this.game.add.image(0, 0, 'color_bg');
-    this.game.add.image(0, 0, 'city_bg');
-    this.game.add.image(0, 0, 'overlay_bg');
+    map = this.game.add.tilemap('levelSelect');
+    map.addTilesetImage('pixelui', 'pixelui');
+    levels = map.createLayer('levels');
 
-    //affiche le nom du jeu
-    var testLabel = this.game.add.text(this.game.width / 2, -50, 'Le Jeu Démarre', {
-        font: '25px pixel',
-        fill: '#ffffff'
+    positionArray = [];
+    mapObjectIndexArray = [];
+    mapObjectBasicArray = map.objects.position;
+    mapObjectBasicArray.forEach(function (mapObjectBasicArray) {
+        //a moi meme: check donc si tu peux leur créé un id pis l'envoyer
+        mapObjectIndexArray.push(mapObjectBasicArray.properties.index);
     });
-    testLabel.anchor.setTo(0.5, 0.5);
+    for (i = 0; i <= mapObjectIndexArray.length; i++) {
+        if (mapObjectIndexArray[i] == i) {
+            positionArray.push(map.objects.position[i]);
+            var levelLabel = this.game.add.text(positionArray[i].x - 5, positionArray[i].y - 5, 'Niveau\n' + i, {
+                font: '10px smallest',
+                fill: '#ffffff',
+                align: 'center'
+            });
+        }
+    }
 
-    this.game.add.tween(testLabel).to({
-        y: 80
-    }, 1000).easing(Phaser.Easing.Bounce.Out).start();
+
 
 };
 
