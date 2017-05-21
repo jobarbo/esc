@@ -19,6 +19,9 @@ preloader.preload = function () {
   //charge le joueur
   this.game.load.spritesheet('player', 'images/pixel_perso.png', 21, 21);
 
+  //charge la clef
+  this.game.load.spritesheet('key','images/key.png',21,21);
+
   //et le reste des images : enemy
   this.game.load.image('enemy', 'images/enemy.png');
   this.game.load.image('enemy_death', 'images/enemy_dead.png');

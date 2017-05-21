@@ -79,7 +79,7 @@ mainMenu.create = function () {
     tutorialLabel.events.onInputDown.add(this.demarrer, this);
 
     if (!this.game.device.desktop) {
-        this.game.input.onDown.add(this.demarrer, this);
+        //this.game.input.onDown.add(this.demarrer, this);
         //text explicatif sur comment debuter le jeu
         mobileNotice = this.game.add.text(this.game.width - 45, 45, 'Mode mobile', {
             font: '8px smallest',

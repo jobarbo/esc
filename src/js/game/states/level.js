@@ -1,6 +1,6 @@
 var level = {};
 var currentLevel;
-var map, collisionLayer, player, emitter, particles, cursors, hourGlassVariable, laser, rayCastTimer, jumpCount, jumpkey, theGame, playerScale, levelText, helpTextTween, helpText, heroLanding, raycasting, mapObjectNameArray, hitPlatform, enemyTween, hasFired, playerVisible, lightBitmap;
+var map, collisionLayer, player, key, gotKey, emitter, particles, cursors, hourGlassVariable, laser, rayCastTimer, jumpCount, jumpkey, theGame, playerScale, levelText, helpTextTween, helpText, heroLanding, raycasting, mapObjectNameArray, hitPlatform, enemyTween, hasFired, playerVisible, lightBitmap;
 var ray;
 var tileHits = [];
 level.create = function () {
@@ -8,6 +8,7 @@ level.create = function () {
     //configure la tilemap
     if (currentLevel == 0) {
         map = this.game.add.tilemap('niveau1');
+
         levelText = '1. appuyez sur la touche haut pour sauter.\n(Deux fois pour un double saut)\n2. gauche/droite pour naviguer';
     } else {
         map = this.game.add.tilemap('niveau2');
@@ -40,6 +41,10 @@ level.create = function () {
         if (mapObjectNameArray[i] == 'enemyBegin') {
             enemyBegin = map.objects.evenement[i]
             this.enemyBeginRect = new Phaser.Rectangle(enemyBegin.x, enemyBegin.y, enemyBegin.width, enemyBegin.height);
+        }
+        if (mapObjectNameArray[i] == 'switch') {
+            keyPosition = map.objects.evenement[i]
+            this.keyPositionRect = new Phaser.Rectangle(keyPosition.x, keyPosition.y, keyPosition.width, keyPosition.height);
         }
         if (mapObjectNameArray[i] == 'enemyStop1') {
             enemyStop1 = map.objects.evenement[i]
@@ -74,6 +79,17 @@ level.create = function () {
     player.scale.setTo(1, 1);
     playerScale = player.scale.x;
 
+    key = this.game.add.sprite(keyPosition.x, keyPosition.y, 'key');
+    key.animations.add('keyAnim', [0, 0, 0, 0, 0, 0, 1, 2, 3, 4], 10, true);
+    var keyFloat = this.game.add.tween(key).to({
+        y: key.y - 2
+    }, 500, "Sine.easeInOut", true, 0, -1);
+    keyFloat.yoyo(true, 0);
+
+    //ajoute le moteur physique au collectible
+    this.game.physics.arcade.enable(key);
+    gotKey = false;
+
     //genere les sprite de particule
     emitter = this.game.add.emitter(0, 0, 100);
     emitter.makeParticles('splat');
@@ -90,7 +106,6 @@ level.create = function () {
     emitter.minParticleScale = 0.2;
     emitter.maxParticleScale = 0.3;
     emitter.particleDrag.x = 50;
-    console.log(emitter);
 
     //appele le layer de premier plan pour les décors
     foregroundLayer = map.createLayer('foreground');
@@ -107,8 +122,6 @@ level.create = function () {
     this.rayBitmapImage = this.game.add.image(0, 0, this.rayBitmap);
     this.rayBitmapImage.visible = false;
 
-    // Function de débug pour afficher ou non les rayon de lumiere
-    this.game.input.onTap.add(this.toggleRays, this);
 
     collisionLayer.visible = false;
     collisionLayer.debug = false;
@@ -134,7 +147,9 @@ level.create = function () {
 
     //Configure le compteur de saut pour créé un doule saut
     jumpCount = 0;
-    jumpkey = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+    jumpkey = this.game.input.keyboard.addKey(Phaser.Keyboard.UP);
+    altJumpKey = this.game.input.keyboard.addKey(Phaser.Keyboard.W);
+    spaceJumpKey = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
 
     //configure le comportement de la camera
     this.game.camera.follow(player, Phaser.Camera.FOLLOW_PLATFORMER);
@@ -156,7 +171,7 @@ level.create = function () {
 
     //  Create our Timer
     deathTimer = this.game.time.create(false);
-    deathTimer.loop(1000, this.fireDeathRay, this).autoDestroy = true;
+    deathTimer.loop(200, this.fireDeathRay, this).autoDestroy = true;
 
     //
     restartTweenTimer = this.game.time.create(false);
@@ -176,6 +191,12 @@ level.create = function () {
 
     //  les controles du jeu
     cursors = this.game.input.keyboard.createCursorKeys();
+
+    //ajout des touche WAD en plus des touche curseur
+    this.wasd = {
+        left: this.game.input.keyboard.addKey(Phaser.Keyboard.A),
+        right: this.game.input.keyboard.addKey(Phaser.Keyboard.D)
+    };
 
     heroLanding = false;
 
@@ -203,10 +224,19 @@ level.update = function () {
         laser.x = enemy.x;
         laser.y = enemy.y;
     }
-    //si le joueur touche au rectacle exitRect, demarre le prochain niveau
 
-    if (Phaser.Rectangle.containsPoint(this.exitRect, player.position)) {
+    key.animations.play('keyAnim');
+    this.game.physics.arcade.overlap(player, key, this.takeKey, null, this);
+
+    //si le joueur touche au rectacle exitRect, demarre le prochain niveau
+    if (gotKey == true) {
+        this.exitRect.x = exit.x;
+        //this.exitRect.y = exit.y;
+    } else {
         this.exitRect.x = -40;
+    }
+    if (Phaser.Rectangle.containsPoint(this.exitRect, player.position)) {
+        gotKey = false;
         var disappear = this.game.add.tween(player).to({
             alpha: 0
         }, 1000, "Sine.easeInOut", true, 0);
@@ -257,6 +287,7 @@ level.movePlayer = function () {
     //reconfigure la velocité du joueur a chaque itération de la function update(60fps)
     player.body.velocity.x = 0;
 
+
     //si la vitesse de chute depasse 200, active le heroLanding
     if (player.body.velocity.y >= 200) {
         heroLanding = true;
@@ -265,10 +296,12 @@ level.movePlayer = function () {
     //si le corps du joueur touche au tuile et que l'on pese sur le touche de saut, démarre le processus de saut.
     if (player.body.onFloor()) {
         jumpkey.onDown.add(this.jumpCheck, this);
+        altJumpKey.onDown.add(this.jumpCheck, this);
+        spaceJumpKey.onDown.add(this.jumpCheck, this);
     }
 
     //bouge le joueur a gauche et l'anime
-    if (cursors.left.isDown || this.moveLeft) {
+    if (cursors.left.isDown || this.moveLeft || this.wasd.left.isDown) {
         player.scale.x = -playerScale;
         player.body.velocity.x = -80;
         player.animations.play('right');
@@ -276,7 +309,7 @@ level.movePlayer = function () {
             player.frame = 3;
         };
         //bouge le joueur a droite et l'anime
-    } else if (cursors.right.isDown || this.moveRight) {
+    } else if (cursors.right.isDown || this.moveRight || this.wasd.right.isDown) {
 
         player.scale.x = playerScale;
         player.body.velocity.x = 80;
@@ -325,40 +358,72 @@ level.moveEnemy = function () {
 
     enemyTween.start();
 }
+level.takeKey = function (player, coin) {
 
-// fonction qui s'occupe de créé un ligne qui vérifie si l'ennemie percois le joueur
-level.lineOfSight = function () {
-    var ray = new Phaser.Line(enemy.x, enemy.y, player.x, player.y);
-    // Vérifie si un mur bloque la vision entre l'ennemi et le joueur
-    var intersect = this.getWallIntersection(ray);
-    if (intersect) {
-        // un mur bloque la vision de l'ennmi donc l'ennmi affiche une couleur par defaut
-        enemy.tint = 0xffffff;
-        if (enemyTween._codePaused == true) {
-            restartTweenTimer.start();
+
+        // redimensionne la key pour la rendre invisible
+        key.scale.setTo(0, 0);
+
+
+        if (player.scale.x == -1) {
+            this.game.add.tween(player.scale).to({
+                x: -1.3,
+                y: 1.3
+            }, 100).yoyo(true).start();
+
+        } else {
+            this.game.add.tween(player.scale).to({
+                x: 1.3,
+                y: 1.3
+            }, 100).yoyo(true).start();
         }
-        playerVisible = false;
-        deathTimer.stop(false);
-    } else {
-        // l'ennemi peut voir le joueur donc sa couleur change
-
-        enemy.tint = 0xffaaaa;
-        enemyTween.pause();
-        playerVisible = true;
 
 
-        if (hasFired == false) {
-            deathTimer.start();
+        //tue le coin et le fait disparaitre du jeu
+        key.kill();
 
-            hourGlassVariable++;
-            if (hourGlassVariable == 1) {
-                this.game.camera.flash(0xff0000, 800);
+        //joue le son
+        //this.coinSound.play();
+
+        //augmente notre score de 5 points
+        gotKey = true;
+
+    },
+
+
+    // fonction qui s'occupe de créé un ligne qui vérifie si l'ennemie percois le joueur
+    level.lineOfSight = function () {
+        var ray = new Phaser.Line(enemy.x, enemy.y, player.x, player.y);
+        // Vérifie si un mur bloque la vision entre l'ennemi et le joueur
+        var intersect = this.getWallIntersection(ray);
+        if (intersect) {
+            // un mur bloque la vision de l'ennmi donc l'ennmi affiche une couleur par defaut
+            enemy.tint = 0xffffff;
+            if (enemyTween._codePaused == true) {
+                restartTweenTimer.start();
             }
-        }
+            playerVisible = false;
+            deathTimer.stop(false);
+        } else {
+            // l'ennemi peut voir le joueur donc sa couleur change
 
+            enemy.tint = 0xffaaaa;
+            enemyTween.pause();
+            playerVisible = true;
+
+
+            if (hasFired == false) {
+                deathTimer.start();
+
+                hourGlassVariable++;
+                if (hourGlassVariable == 1) {
+                    this.game.camera.flash(0xff0000, 300);
+                }
+            }
+
+        }
+        this.bitmap.dirty = true;
     }
-    this.bitmap.dirty = true;
-}
 
 level.restartEnemyMovement = function () {
     enemyTween.resume();
@@ -581,18 +646,8 @@ level.enableRaycasting = function () {
 
     raycasting = false;
 
-
-
 }
 
-level.toggleRays = function () {
-    // active ou non la visibilité des rayon au click de la souris
-    if (this.rayBitmapImage.visible) {
-        this.rayBitmapImage.visible = false;
-    } else {
-        this.rayBitmapImage.visible = true;
-    }
-};
 
 // cette fonction itere dans tout les murs et retourn l'intersection la plus proche du point de depart du rayon
 level.getWallIntersection = function (ray) {
@@ -674,7 +729,7 @@ level.flipPlayer = function () {
 
 level.addMobileInputs = function () {
     //ajoute le bouton pour sauter
-    var jumpButton = this.game.add.sprite(this.game.width-50, this.game.height-50, 'jumpButton');
+    var jumpButton = this.game.add.sprite(this.game.width - 50, this.game.height - 50, 'jumpButton');
     jumpButton.inputEnabled = true;
     jumpButton.alpha = 0.5;
     jumpButton.scale.setTo(0.5);
@@ -686,7 +741,7 @@ level.addMobileInputs = function () {
     this.moveRight = false;
 
     //ajoute le bouton pour allez a gauche
-    var leftButton = this.game.add.sprite(20 , this.game.height-50, 'leftButton');
+    var leftButton = this.game.add.sprite(20, this.game.height - 50, 'leftButton');
     leftButton.scale.setTo(0.5);
     leftButton.inputEnabled = true;
     leftButton.alpha = 0.5;
@@ -696,7 +751,7 @@ level.addMobileInputs = function () {
     leftButton.events.onInputUp.add(this.setLeftFalse, this);
 
     //ajoute le boutron pour allez a droite
-    var rightButton = this.game.add.sprite(50, this.game.height-50, 'rightButton');
+    var rightButton = this.game.add.sprite(80, this.game.height - 50, 'rightButton');
     rightButton.inputEnabled = true;
     rightButton.scale.setTo(0.5);
     rightButton.alpha = 0.5;
