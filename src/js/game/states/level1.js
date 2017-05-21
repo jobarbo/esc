@@ -1,6 +1,6 @@
 var level1 = {};
 var currentLevel;
-var map, collisionLayer, player, cursors, hourGlassVariable, laser, rayCastTimer, jumpCount, jumpkey, theGame, playerScale,levelText, helpTextTween, helpText, heroLanding, raycasting, mapObjectNameArray, hitPlatform, enemyTween, hasFired, playerVisible, lightBitmap;
+var map, collisionLayer, player, emitter, particles, cursors, hourGlassVariable, laser, rayCastTimer, jumpCount, jumpkey, theGame, playerScale, levelText, helpTextTween, helpText, heroLanding, raycasting, mapObjectNameArray, hitPlatform, enemyTween, hasFired, playerVisible, lightBitmap;
 var ray;
 var tileHits = [];
 level1.create = function () {
@@ -74,7 +74,27 @@ level1.create = function () {
     player.scale.setTo(1, 1);
     playerScale = player.scale.x;
 
+    //genere les sprite de particule
+    emitter = this.game.add.emitter(0, 0, 100);
+    emitter.makeParticles('splat');
+    particles = emitter.children;
+  
+    this.game.physics.arcade.enable(emitter);
+    emitter.enableBody = true;
+    emitter.gravity = 100;
+    emitter.minRotation = 0;
+    emitter.maxRotation = 0;
+    emitter.bounce.setTo(0.5, 0.5);
+    emitter.setXSpeed(-50, 50);
+    emitter.setYSpeed(-50, 50);
+    emitter.minParticleScale = 0.2;
+    emitter.maxParticleScale = 0.5;
+    emitter.particleDrag.x = 50;
+    console.log(emitter);
+
+    //appele le layer de premier plan pour les décors
     foregroundLayer = map.createLayer('foreground');
+
     // creation d'une texture bitmap qui va dessiné les cones ''lumiere''
     this.bitmap = this.game.add.bitmapData(map.widthInPixels, map.heightInPixels);
     this.bitmap.context.fillStyle = 'rgb(255, 255, 255)';
@@ -168,24 +188,26 @@ level1.update = function () {
     this.game.physics.arcade.overlap(laser, player, this.collisionHandler, null, this);
     // creation d'une variable qui contien false mais qui devien true lors de la collision entre le joueur et les plateforme
     hitPlatform = this.game.physics.arcade.collide(player, collisionLayer);
+    hitParticles = this.game.physics.arcade.collide(emitter, collisionLayer);
 
     this.lineOfSight();
     this.movePlayer();
 
     if (hasFired == true) {
         laser.rotation = this.game.physics.arcade.moveToXY(laser, player.x, player.y, 60, 150);
-
-
     } else {
         laser.x = enemy.x;
         laser.y = enemy.y;
     }
     //si le joueur touche au rectacle exitRect, demarre le prochain niveau
+
     if (Phaser.Rectangle.containsPoint(this.exitRect, player.position)) {
+        this.exitRect.x = -40;
         var disappear = this.game.add.tween(player).to({
-        alpha: 0
-    }, 1000, "Sine.easeInOut", true, 0);
-        disappear.onComplete(this.changeLevel(currentLevel + 1));
+            alpha: 0
+        }, 1000, "Sine.easeInOut", true, 0);
+        disappear.onComplete.add(this.changeLevel, this);
+
 
     }
     //si le joueur n'est plus dans le monde de jeu, affiche l'écran game Over
@@ -193,14 +215,14 @@ level1.update = function () {
         this.gameOver();
     }
 
-
-
 }
 
-level1.changeLevel = function (nextLevelID) {
-    
-    this.game.global.levelID = nextLevelID
+
+level1.changeLevel = function () {
+
+    this.game.global.levelID = currentLevel + 1;
     this.game.state.start("level1");
+
 }
 
 level1.showTutorialText = function () {
@@ -319,18 +341,17 @@ level1.lineOfSight = function () {
         enemy.tint = 0xffaaaa;
         enemyTween.pause();
         playerVisible = true;
-        
+
 
         if (hasFired == false) {
             deathTimer.start();
 
             hourGlassVariable++;
-            console.log(hourGlassVariable);
-            if(hourGlassVariable==1){
+            if (hourGlassVariable == 1) {
                 this.game.camera.flash(0xff0000, 800);
             }
         }
-        
+
     }
     this.bitmap.dirty = true;
 }
@@ -608,7 +629,21 @@ level1.getWallIntersection = function (ray) {
 level1.collisionHandler = function () {
     player.kill();
     laser.visible = false;
-    this.gameOver();
+
+    //  Position the emitter where the mouse/touch event was
+    emitter.x = player.x;
+    emitter.y = player.y;
+
+    //  The first parameter sets the effect to "explode" which means all particles are emitted at once
+    //  The second gives each particle a 2000ms lifespan
+    //  The third is ignored when using burst/explode mode
+    //  The final parameter (10) is how many particles will be emitted in this single burst
+
+    emitter.start(true, 2000, null, 20);
+    gameOverTimer = this.game.time.create();
+    gameOverTimer.add(2500, this.gameOver, this);
+    gameOverTimer.start();
+    
 
 }
 

@@ -33,6 +33,9 @@ preloader.preload = function () {
   this.game.load.tilemap('niveau1', 'images/niveau1.json', null, Phaser.Tilemap.TILED_JSON);
   this.game.load.tilemap('niveau2', 'images/niveau2.json', null, Phaser.Tilemap.TILED_JSON);
 
+  //preload particle
+  this.game.load.image('splat','images/redParticle.jpeg');
+
   //  Next we load the tileset. This is just an image, loaded in via the normal way we load images:
   this.game.load.image('pixel','images/pixel.png');
   this.game.load.image('pixelui','images/pixelui.png');
