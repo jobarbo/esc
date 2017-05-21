@@ -78,7 +78,7 @@ level.create = function () {
     emitter = this.game.add.emitter(0, 0, 100);
     emitter.makeParticles('splat');
     particles = emitter.children;
-  
+
     this.game.physics.arcade.enable(emitter);
     emitter.enableBody = true;
     emitter.gravity = 100;
@@ -179,6 +179,10 @@ level.create = function () {
 
     heroLanding = false;
 
+    //si le jeu est lancer sur autre chose qu'un ordinateur de table
+    if (!this.game.device.desktop) {
+        this.addMobileInputs();
+    }
 
 
 }
@@ -264,7 +268,7 @@ level.movePlayer = function () {
     }
 
     //bouge le joueur a gauche et l'anime
-    if (cursors.left.isDown) {
+    if (cursors.left.isDown || this.moveLeft) {
         player.scale.x = -playerScale;
         player.body.velocity.x = -80;
         player.animations.play('right');
@@ -272,7 +276,7 @@ level.movePlayer = function () {
             player.frame = 3;
         };
         //bouge le joueur a droite et l'anime
-    } else if (cursors.right.isDown) {
+    } else if (cursors.right.isDown || this.moveRight) {
 
         player.scale.x = playerScale;
         player.body.velocity.x = 80;
@@ -643,7 +647,7 @@ level.collisionHandler = function () {
     gameOverTimer = this.game.time.create();
     gameOverTimer.add(2500, this.gameOver, this);
     gameOverTimer.start();
-    
+
 
 }
 
@@ -667,6 +671,57 @@ level.jumpCheck = function () {
 level.flipPlayer = function () {
     player.scale.x *= -1;
 }
+
+level.addMobileInputs = function () {
+    //ajoute le bouton pour sauter
+    var jumpButton = this.game.add.sprite(this.game.width-50, this.game.height-50, 'jumpButton');
+    jumpButton.inputEnabled = true;
+    jumpButton.alpha = 0.5;
+    jumpButton.scale.setTo(0.5);
+    //appelle la fonction jumpPlayer quand le bouton pour saute est utiliser
+    jumpButton.events.onInputDown.add(this.jumpCheck, this);
+
+    //les variables de mouvement
+    this.moveLeft = false;
+    this.moveRight = false;
+
+    //ajoute le bouton pour allez a gauche
+    var leftButton = this.game.add.sprite(20 , this.game.height-50, 'leftButton');
+    leftButton.scale.setTo(0.5);
+    leftButton.inputEnabled = true;
+    leftButton.alpha = 0.5;
+    leftButton.events.onInputOver.add(this.setLeftTrue, this);
+    leftButton.events.onInputOut.add(this.setLeftFalse, this);
+    leftButton.events.onInputDown.add(this.setLeftTrue, this);
+    leftButton.events.onInputUp.add(this.setLeftFalse, this);
+
+    //ajoute le boutron pour allez a droite
+    var rightButton = this.game.add.sprite(50, this.game.height-50, 'rightButton');
+    rightButton.inputEnabled = true;
+    rightButton.scale.setTo(0.5);
+    rightButton.alpha = 0.5;
+    rightButton.events.onInputOver.add(this.setRightTrue, this);
+    rightButton.events.onInputOut.add(this.setRightFalse, this);
+    rightButton.events.onInputDown.add(this.setRightTrue, this);
+    rightButton.events.onInputUp.add(this.setRightFalse, this);
+}
+//Basic functions that are used in our callbacks
+
+level.setLeftTrue = function () {
+    this.moveLeft = true;
+}
+
+level.setLeftFalse = function () {
+    this.moveLeft = false;
+}
+level.setRightTrue = function () {
+    this.moveRight = true;
+}
+level.setRightFalse = function () {
+    this.moveRight = false;
+}
+
+
 
 //redemarre le jeu
 level.gameOver = function () {
