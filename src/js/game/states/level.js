@@ -1,12 +1,12 @@
-var level1 = {};
+var level = {};
 var currentLevel;
 var map, collisionLayer, player, emitter, particles, cursors, hourGlassVariable, laser, rayCastTimer, jumpCount, jumpkey, theGame, playerScale, levelText, helpTextTween, helpText, heroLanding, raycasting, mapObjectNameArray, hitPlatform, enemyTween, hasFired, playerVisible, lightBitmap;
 var ray;
 var tileHits = [];
-level1.create = function () {
+level.create = function () {
     currentLevel = this.game.global.levelID;
     //configure la tilemap
-    if (currentLevel == 1) {
+    if (currentLevel == 0) {
         map = this.game.add.tilemap('niveau1');
         levelText = '1. appuyez sur la touche haut pour sauter.\n(Deux fois pour un double saut)\n2. gauche/droite pour naviguer';
     } else {
@@ -88,7 +88,7 @@ level1.create = function () {
     emitter.setXSpeed(-50, 50);
     emitter.setYSpeed(-50, 50);
     emitter.minParticleScale = 0.2;
-    emitter.maxParticleScale = 0.5;
+    emitter.maxParticleScale = 0.3;
     emitter.particleDrag.x = 50;
     console.log(emitter);
 
@@ -183,7 +183,7 @@ level1.create = function () {
 
 }
 
-level1.update = function () {
+level.update = function () {
 
     this.game.physics.arcade.overlap(laser, player, this.collisionHandler, null, this);
     // creation d'une variable qui contien false mais qui devien true lors de la collision entre le joueur et les plateforme
@@ -218,14 +218,14 @@ level1.update = function () {
 }
 
 
-level1.changeLevel = function () {
+level.changeLevel = function () {
 
     this.game.global.levelID = currentLevel + 1;
-    this.game.state.start("level1");
+    this.game.state.start("level");
 
 }
 
-level1.showTutorialText = function () {
+level.showTutorialText = function () {
     helpText = this.game.add.text(160, 40, levelText, {
         font: '11px pixelSmall',
         fill: '#0000',
@@ -249,7 +249,7 @@ level1.showTutorialText = function () {
 
 
 //fonction qui s'occupe de l'animation du joueur
-level1.movePlayer = function () {
+level.movePlayer = function () {
     //reconfigure la velocité du joueur a chaque itération de la function update(60fps)
     player.body.velocity.x = 0;
 
@@ -299,7 +299,7 @@ level1.movePlayer = function () {
     }
 }
 //fonction qui s'occuppe de l'animation de l'ennemi
-level1.moveEnemy = function () {
+level.moveEnemy = function () {
 
     enemyTween = this.game.add.tween(enemy).to({
             x: this.enemyStop1Rect.x,
@@ -323,7 +323,7 @@ level1.moveEnemy = function () {
 }
 
 // fonction qui s'occupe de créé un ligne qui vérifie si l'ennemie percois le joueur
-level1.lineOfSight = function () {
+level.lineOfSight = function () {
     var ray = new Phaser.Line(enemy.x, enemy.y, player.x, player.y);
     // Vérifie si un mur bloque la vision entre l'ennemi et le joueur
     var intersect = this.getWallIntersection(ray);
@@ -356,7 +356,7 @@ level1.lineOfSight = function () {
     this.bitmap.dirty = true;
 }
 
-level1.restartEnemyMovement = function () {
+level.restartEnemyMovement = function () {
     enemyTween.resume();
     if (playerVisible == true && hasFired == true) {
         hasFired = true;
@@ -366,7 +366,7 @@ level1.restartEnemyMovement = function () {
     }
 }
 
-level1.fireDeathRay = function () {
+level.fireDeathRay = function () {
 
     deathTimer.stop(false);
     laser.visible = true;
@@ -375,7 +375,7 @@ level1.fireDeathRay = function () {
 }
 
 //fonction qui active le affichage des rayon de lumiere
-level1.enableRaycasting = function () {
+level.enableRaycasting = function () {
 
 
     // Next, fill the entire light bitmap with a dark shadow color.
@@ -581,7 +581,7 @@ level1.enableRaycasting = function () {
 
 }
 
-level1.toggleRays = function () {
+level.toggleRays = function () {
     // active ou non la visibilité des rayon au click de la souris
     if (this.rayBitmapImage.visible) {
         this.rayBitmapImage.visible = false;
@@ -591,7 +591,7 @@ level1.toggleRays = function () {
 };
 
 // cette fonction itere dans tout les murs et retourn l'intersection la plus proche du point de depart du rayon
-level1.getWallIntersection = function (ray) {
+level.getWallIntersection = function (ray) {
     var distanceToWall = Number.POSITIVE_INFINITY;
     var closestIntersection = null;
 
@@ -626,7 +626,7 @@ level1.getWallIntersection = function (ray) {
     return closestIntersection;
 };
 
-level1.collisionHandler = function () {
+level.collisionHandler = function () {
     player.kill();
     laser.visible = false;
 
@@ -639,7 +639,7 @@ level1.collisionHandler = function () {
     //  The third is ignored when using burst/explode mode
     //  The final parameter (10) is how many particles will be emitted in this single burst
 
-    emitter.start(true, 2000, null, 20);
+    emitter.start(true, 2000, null, 50);
     gameOverTimer = this.game.time.create();
     gameOverTimer.add(2500, this.gameOver, this);
     gameOverTimer.start();
@@ -648,13 +648,13 @@ level1.collisionHandler = function () {
 }
 
 //fonction qui effectue le saut du joueur
-level1.jump = function () {
+level.jump = function () {
     player.body.velocity.y = -150;
     jumpCount++;
 }
 
 //fonction qui a pour but de vérifier le nombre de saut restant avant de pouvoir retoucher au sol
-level1.jumpCheck = function () {
+level.jumpCheck = function () {
     if (jumpCount == 0 && !player.body.onFloor()) {
         return;
     } else if (jumpCount < 2) {
@@ -664,17 +664,17 @@ level1.jumpCheck = function () {
 
 
 //fonction qui change la direction du sprite du joueur dans le but de sauvé de l'espace
-level1.flipPlayer = function () {
+level.flipPlayer = function () {
     player.scale.x *= -1;
 }
 
 //redemarre le jeu
-level1.gameOver = function () {
+level.gameOver = function () {
     this.game.state.start("gameOver");
 }
 
-level1.render = function () {
+level.render = function () {
 
 }
 
-module.exports = level1;
+module.exports = level;

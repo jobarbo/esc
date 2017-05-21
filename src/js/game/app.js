@@ -11,12 +11,12 @@ var states = {
   gameOver: require('./states/gameOver.js'),
   levelSelector: require('./states/levelSelector.js'),
   tutorial: require('./states/tutorial.js'),
-  level1: require('./states/level1.js')
+  level: require('./states/level.js')
 };
 
 var game = new Phaser.Game(properties.size.x, properties.size.y, Phaser.AUTO, '', null, false, false);
 game.global = {
-  levelID: 1
+  levelID: 0
 }
 
 // Automatically register each state.

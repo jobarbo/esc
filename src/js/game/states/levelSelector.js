@@ -6,6 +6,7 @@ levelSelector.create = function () {
     map.addTilesetImage('pixelui', 'pixelui');
     levels = map.createLayer('levels');
 
+    labelArray = [];
     positionArray = [];
     mapObjectIndexArray = [];
     mapObjectBasicArray = map.objects.position;
@@ -20,13 +21,36 @@ levelSelector.create = function () {
                 font: '10px smallest',
                 fill: '#ffffff',
                 align: 'center'
+           
             });
+            labelArray.push(levelLabel);
+            this.game.physics.arcade.enable(labelArray[i]);
+            labelArray[i].inputEnabled = true;
+            labelArray[i].id=i;
+            labelArray[i].events.onInputOver.add(this.mouseOver, labelArray[i]);
+            labelArray[i].events.onInputOut.add(this.mouseOut, labelArray[i]);
+            labelArray[i].events.onInputDown.add(this.demarrer, labelArray[i]);
         }
     }
 
-
-
 };
+
+levelSelector.demarrer = function(level){
+    levelSelected = level.id;
+    this.game.global.levelID = levelSelected;
+    this.game.state.start('level')
+}
+
+levelSelector.mouseOver = function (textLabel) {
+    textLabel.fill = "#ffff44";
+    this.game.canvas.style.cursor = 'pointer';
+}
+
+
+levelSelector.mouseOut = function (textLabel) {
+    textLabel.fill = "#ffffff";
+    this.game.canvas.style.cursor = 'inherit';
+}
 
 levelSelector.update = function () {
 

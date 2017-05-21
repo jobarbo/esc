@@ -14,7 +14,6 @@ tutorial.create = function () {
     for (i = 0; i <= mapObjectNameArray.length; i++) {
         if (mapObjectNameArray[i] == 'text1') {
             text1 = map.objects.position[i]
-            console.log(text1)
             this.text1Rect = new Phaser.Rectangle(text1.x, text1.y, text1.width, text1.height);
         }
         if (mapObjectNameArray[i] == 'text2') {
