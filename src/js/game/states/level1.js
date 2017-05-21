@@ -182,7 +182,10 @@ level1.update = function () {
     }
     //si le joueur touche au rectacle exitRect, demarre le prochain niveau
     if (Phaser.Rectangle.containsPoint(this.exitRect, player.position)) {
-        this.changeLevel(currentLevel + 1);
+        var disappear = this.game.add.tween(player).to({
+        alpha: 0
+    }, 1000, "Sine.easeInOut", true, 0);
+        disappear.onComplete(this.changeLevel(currentLevel + 1));
 
     }
     //si le joueur n'est plus dans le monde de jeu, affiche l'écran game Over
@@ -195,6 +198,7 @@ level1.update = function () {
 }
 
 level1.changeLevel = function (nextLevelID) {
+    
     this.game.global.levelID = nextLevelID
     this.game.state.start("level1");
 }
