@@ -2,22 +2,55 @@ var levelSelector = {};
 
 levelSelector.create = function () {
 
-    this.game.add.image(0, 0, 'color_bg');
-    this.game.add.image(0, 0, 'city_bg');
-    this.game.add.image(0, 0, 'overlay_bg');
+    map = this.game.add.tilemap('levelSelect');
+    map.addTilesetImage('pixelui', 'pixelui');
+    levels = map.createLayer('levels');
 
-    //affiche le nom du jeu
-    var testLabel = this.game.add.text(this.game.width / 2, -50, 'Le Jeu Démarre', {
-        font: '25px pixel',
-        fill: '#ffffff'
+    labelArray = [];
+    positionArray = [];
+    mapObjectIndexArray = [];
+    mapObjectBasicArray = map.objects.position;
+    mapObjectBasicArray.forEach(function (mapObjectBasicArray) {
+        //a moi meme: check donc si tu peux leur créé un id pis l'envoyer
+        mapObjectIndexArray.push(mapObjectBasicArray.properties.index);
     });
-    testLabel.anchor.setTo(0.5, 0.5);
-
-    this.game.add.tween(testLabel).to({
-        y: 80
-    }, 1000).easing(Phaser.Easing.Bounce.Out).start();
+    for (i = 0; i <= mapObjectIndexArray.length; i++) {
+        if (mapObjectIndexArray[i] == i) {
+            positionArray.push(map.objects.position[i]);
+            var levelLabel = this.game.add.text(positionArray[i].x - 5, positionArray[i].y - 5, 'Niveau\n' + i, {
+                font: '10px smallest',
+                fill: '#ffffff',
+                align: 'center'
+           
+            });
+            labelArray.push(levelLabel);
+            this.game.physics.arcade.enable(labelArray[i]);
+            labelArray[i].inputEnabled = true;
+            labelArray[i].id=i;
+            labelArray[i].events.onInputOver.add(this.mouseOver, labelArray[i]);
+            labelArray[i].events.onInputOut.add(this.mouseOut, labelArray[i]);
+            labelArray[i].events.onInputDown.add(this.demarrer, labelArray[i]);
+        }
+    }
 
 };
+
+levelSelector.demarrer = function(level){
+    levelSelected = level.id;
+    this.game.global.levelID = levelSelected;
+    this.game.state.start('level')
+}
+
+levelSelector.mouseOver = function (textLabel) {
+    textLabel.fill = "#ffff44";
+    this.game.canvas.style.cursor = 'pointer';
+}
+
+
+levelSelector.mouseOut = function (textLabel) {
+    textLabel.fill = "#ffffff";
+    this.game.canvas.style.cursor = 'inherit';
+}
 
 levelSelector.update = function () {
 

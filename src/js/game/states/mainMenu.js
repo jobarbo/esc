@@ -127,10 +127,9 @@ mainMenu.demarrer = function (args) {
     //demarre le jeu
     //arrete la musique
     this.music.stop();
-    if(args.id == 'new'){this.game.state.start('level1');}
+    if(args.id == 'new'){this.game.state.start('level');}
     if(args.id == 'level'){this.game.state.start('levelSelector');}
     if(args.id == 'tutorial'){this.game.state.start('tutorial');}
-    //this.game.state.start('level1');
 
 };
 
