@@ -28,6 +28,8 @@ preloader.preload = function () {
 
   this.game.load.image('laser', 'images/laser.png');
 
+  this.game.load.image('door', 'images/door.png');
+
   //bouton mute sur le menu principale
   this.game.load.spritesheet('mute', 'images/muteButton.png', 28, 22);
 

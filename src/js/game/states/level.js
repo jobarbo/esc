@@ -1,6 +1,6 @@
 var level = {};
 var currentLevel;
-var map, collisionLayer, player, key, gotKey, emitter, particles, cursors, hourGlassVariable, laser, rayCastTimer, jumpCount, jumpkey, theGame, playerScale, levelText, helpTextTween, helpText, heroLanding, raycasting, mapObjectNameArray, hitPlatform, enemyTween, hasFired, playerVisible, lightBitmap;
+var map, collisionLayer, player, key,door, gotKey, emitter, particles, cursors, hourGlassVariable, laser, rayCastTimer, jumpCount, jumpkey, theGame, playerScale, levelText, helpTextTween, helpText, heroLanding, raycasting, mapObjectNameArray, hitPlatform, enemyTween, hasFired, playerVisible, lightBitmap;
 var ray;
 var tileHits = [];
 level.create = function () {
@@ -56,8 +56,10 @@ level.create = function () {
         }
     }
 
-    //charge le sprite du joueur et le positionne au point de depart
+    //charle le sprite et position la porte
+    door = this.game.add.sprite(exit.x,exit.y,'door');
 
+    //charge le sprite du joueur et le positionne au point de depart
     player = this.game.add.sprite(begin.x + 10, begin.y + begin.height, 'player');
     player.alpha = 0;
 
@@ -231,6 +233,9 @@ level.update = function () {
     //si le joueur touche au rectacle exitRect, demarre le prochain niveau
     if (gotKey == true) {
         this.exitRect.x = exit.x;
+        var removeDoor = this.game.add.tween(door).to({
+            alpha:0
+        },1000,"Sine.easeInOut",true,0);
         //this.exitRect.y = exit.y;
     } else {
         this.exitRect.x = -40;
