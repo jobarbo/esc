@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="5" height="1" tilewidth="21" tileheight="21" nextobjectid="1">
+ <tileset firstgid="1" name="key" tilewidth="21" tileheight="21" tilecount="6" columns="0">
+  <tile id="0">
+   <image width="21" height="21" source="../../../../../../Users/jbarbeau/Downloads/cle-1/1-3-5.png"/>
+  </tile>
+  <tile id="1">
+   <image width="21" height="21" source="../../../../../../Users/jbarbeau/Downloads/cle-1/2.png"/>
+  </tile>
+  <tile id="2">
+   <image width="21" height="21" source="../../../../../../Users/jbarbeau/Downloads/cle-1/4.png"/>
+  </tile>
+  <tile id="3">
+   <image width="21" height="21" source="../../../../../../Users/jbarbeau/Downloads/cle-1/1-3-5.png"/>
+  </tile>
+  <tile id="4">
+   <image width="21" height="21" source="../../../../../../Users/jbarbeau/Downloads/cle-1/2.png"/>
+  </tile>
+  <tile id="5">
+   <image width="21" height="21" source="../../../../../../Users/jbarbeau/Downloads/cle-1/4.png"/>
+  </tile>
+ </tileset>
+ <layer name="Calque de Tile 1" width="5" height="1">
+  <data encoding="csv">
+4,5,6,5,4
+</data>
+ </layer>
+</map>
