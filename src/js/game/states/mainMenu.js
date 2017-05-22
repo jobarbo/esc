@@ -1,35 +1,31 @@
 var mainMenu = {};
-var newGameLabel,nameLabel,levelSelectLabel,tutorialLabel;
+var newGameLabel,nameLabel,levelSelectLabel,tutorialLabel,muteButton;
 
 mainMenu.create = function () {
-    //this.game.add.image(0, 0, 'color_bg');
-    //city = this.game.add.image(0, 0, 'city_bg');
-    this.game.stage.backgroundColor = '#000000';
-    //city.scale.setTo(1.5,1.5);
-    //this.game.add.image(0, 0, 'overlay_bg');
-    this.music = this.game.add.audio('menu'); // add the music
-    this.music.loop = true; //make it loop
-    //this.music.play(); //start the music
+
+    this.game.stage.backgroundColor = '#ffffff';
+
+    menuMusic = this.game.add.audio('mainMenu'); // add the music
+    menuMusic.loop = true; //make it loop
+    menuMusic.play(); //start the music
+    
 
     this.game.input.mouse.capture = true;
 
     //affiche le nom du jeu
-    nameLabel = this.game.add.text(this.game.width / 2, -50, 'ESC', {
-        font: '30px pixelVector',
-        fill: '#ffffff',
-        align: 'center'
-    });
-    nameLabel.anchor.setTo(0.5, 0.5);
+    logo = this.game.add.image(this.game.width / 2, -50,'logo');
 
-    this.game.add.tween(nameLabel).to({
+    logo.anchor.setTo(0.5, 0.5);
+
+    this.game.add.tween(logo).to({
         y: 80
     }, 1000).easing(Phaser.Easing.Bounce.Out).start();
     
 
     //text explicatif sur comment debuter le jeu
-    newGameLabel = this.game.add.text(this.game.width / 2, this.game.height - 110, 'Nouvelle partie', {
-        font: '10px smallest',
-        fill: '#ffffff',
+    newGameLabel = this.game.add.text(this.game.width / 2, this.game.height - 90, 'Nouvelle partie', {
+        font: '13px smallest',
+        fill: '#000',
         align: 'center'
     });
     newGameLabel.id = 'new';
@@ -38,9 +34,9 @@ mainMenu.create = function () {
     newGameLabel.events.onInputOver.add(this.mouseOver, newGameLabel);
     newGameLabel.events.onInputOut.add(this.mouseOut, newGameLabel);
 
-    levelSelectLabel = this.game.add.text(this.game.width / 2, this.game.height - 80, 'Choisir niveau', {
-        font: '10px smallest',
-        fill: '#ffffff',
+    levelSelectLabel = this.game.add.text(this.game.width / 2, this.game.height -60, 'Choisir niveau', {
+        font: '13px smallest',
+        fill: '#000',
         align: 'center'
     });
     levelSelectLabel.id = 'level';
@@ -49,9 +45,9 @@ mainMenu.create = function () {
     levelSelectLabel.events.onInputOver.add(this.mouseOver, levelSelectLabel);
     levelSelectLabel.events.onInputOut.add(this.mouseOut, levelSelectLabel);
 
-    tutorialLabel = this.game.add.text(this.game.width / 2, this.game.height - 50, 'Voir tutoriel', {
-        font: '10px smallest',
-        fill: '#ffffff',
+    tutorialLabel = this.game.add.text(this.game.width / 2, this.game.height - 30, 'Voir tutoriel', {
+        font: '13px smallest',
+        fill: '#000',
         align: 'center'
     });
     tutorialLabel.id = 'tutorial';
@@ -61,29 +57,37 @@ mainMenu.create = function () {
     tutorialLabel.events.onInputOut.add(this.mouseOut, tutorialLabel);
 
     //ajout du bouton qui fait appel a la fonction toggleSound
-    this.muteButton = this.game.add.button(20, 20, 'mute', this.toggleSound, this);
-
-    //si le jeu est deja sans son, afficher le speaker mute
-    this.muteButton.frame = this.game.sound.mute ? 1 : 0;
-    this.muteButton.scale.setTo(0.5,0.5);
+    muteButton = this.game.add.text(20, 20, 'mute',{
+            font: '13px smallest',
+            fill: '#000',
+            align: 'center'
+        });
+    muteButton.id = 'mute';
+    muteButton.inputEnabled = true;
+    muteButton.events.onInputOver.add(this.mouseOver, muteButton );
+    muteButton.events.onInputOut.add(this.mouseOut, muteButton );
 
 
     this.game.physics.arcade.enable(newGameLabel);
     this.game.physics.arcade.enable(levelSelectLabel);
-    this.game.physics.arcade.enable(nameLabel);
+    this.game.physics.arcade.enable(tutorialLabel);
+    this.game.physics.arcade.enable(logo);
+    this.game.physics.arcade.enable(muteButton);
+
 
     //cree une nouvelle variable Phaser keyboard : la fleche haut
     //lorsque pesee elle apelle Start
     newGameLabel.events.onInputDown.add(this.demarrer, this);
     levelSelectLabel.events.onInputDown.add(this.demarrer, this);
     tutorialLabel.events.onInputDown.add(this.demarrer, this);
+    muteButton.events.onInputDown.add(this.toggleSound,this);
 
     if (!this.game.device.desktop) {
         //this.game.input.onDown.add(this.demarrer, this);
         //text explicatif sur comment debuter le jeu
         mobileNotice = this.game.add.text(this.game.width - 45, 45, 'Mode mobile', {
             font: '8px smallest',
-            fill: '#ffffff',
+            fill: '#000',
             align: 'center'
         });
         mobileNotice.anchor.setTo(1, 1);
@@ -91,13 +95,13 @@ mainMenu.create = function () {
 };
 
 mainMenu.mouseOver = function (textLabel) {
-    textLabel.fill = "#ffff44";
+    textLabel.fill = "#565656";
     this.game.canvas.style.cursor = 'pointer';
 }
 
 
 mainMenu.mouseOut = function (textLabel) {
-    textLabel.fill = "#ffffff";
+    textLabel.fill = "#000";
     this.game.canvas.style.cursor = 'inherit';
 }
 
@@ -106,15 +110,15 @@ mainMenu.toggleSound = function () {
     //quand 'game.sound.mute = true', Phaser va muter le jeu
     this.game.sound.mute = !this.game.sound.mute;
 
-    //change le frame du button
-    this.muteButton.frame = this.game.sound.mute ? 1 : 0;
+    if(this.game.sound.mute){
+        //change le frame du button
+        muteButton.text = 'unmute';
+    }else{
+        muteButton.text = 'mute'; 
+    }
+
 }
 
-mainMenu.render = function () {
-
-    //this.game.debug.body(nameLabel);
-    //this.game.debug.body(levelSelectLabel);
-}
 
 mainMenu.demarrer = function (args) {
 
@@ -126,10 +130,20 @@ mainMenu.demarrer = function (args) {
     }
     //demarre le jeu
     //arrete la musique
-    this.music.stop();
-    if(args.id == 'new'){this.game.state.start('level');}
-    if(args.id == 'level'){this.game.state.start('levelSelector');}
-    if(args.id == 'tutorial'){this.game.state.start('tutorial');}
+    menuMusic.stop();
+    if(args.id == 'new')
+    {
+        this.game.state.start('level');
+        menuMusic.stop();
+    }
+    if(args.id == 'level')
+    {
+        this.game.state.start('levelSelector');
+    }
+    if(args.id == 'tutorial')
+    {
+        this.game.state.start('tutorial');
+    }
 
 };
 

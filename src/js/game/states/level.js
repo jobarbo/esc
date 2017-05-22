@@ -1,6 +1,6 @@
 var level = {};
 var currentLevel;
-var map, collisionLayer, player, key,door, gotKey, emitter, particles, cursors, hourGlassVariable, laser, rayCastTimer, jumpCount, jumpkey, theGame, playerScale, levelText, helpTextTween, helpText, heroLanding, raycasting, mapObjectNameArray, hitPlatform, enemyTween, hasFired, playerVisible, lightBitmap;
+var map,keySound,music,jumpSound,deadSound,runSound,doorSound, collisionLayer, player, key,door, gotKey, emitter, particles, cursors, hourGlassVariable, laser, rayCastTimer, jumpCount, jumpkey, theGame, playerScale, levelText, helpTextTween, helpText, heroLanding, raycasting, mapObjectNameArray, hitPlatform, enemyTween, hasFired, playerVisible, lightBitmap;
 var ray;
 var tileHits = [];
 level.create = function () {
@@ -8,12 +8,17 @@ level.create = function () {
     //configure la tilemap
     if (currentLevel == 0) {
         map = this.game.add.tilemap('niveau1');
-
-        levelText = '1. appuyez sur la touche haut pour sauter.\n(Deux fois pour un double saut)\n2. gauche/droite pour naviguer';
-    } else {
+        levelText = 'Appuyez sur la touche GAUCHE/DROITE pour naviguer\nVous devez prendre la clef pour ouvrir la porte';
+    } if(currentLevel == 1) {
         map = this.game.add.tilemap('niveau2');
-        levelText = 'Ne vous faites pas voir pas les rayon du sentinel';
-    }
+        levelText = 'Ne vous faites pas voir pas les rayon du SENTINEL';
+    } if(currentLevel == 2) {
+        map = this.game.add.tilemap('niveau3');
+        levelText = 'Appuyer sur SPACEBAR ou HAUT pour sauter (x2)';
+    } if(currentLevel == 3) {
+        map = this.game.add.tilemap('niveau4');
+        //levelText = 'Ne vous faites pas voir pas les rayon du sentinel';
+    } 
 
     map.addTilesetImage('pixel', 'pixel');
     fargroundLayer = map.createLayer('farground');
@@ -189,6 +194,24 @@ level.create = function () {
 
     this.moveEnemy();
 
+    //initialise les son et la musique
+    music = this.game.add.audio('music');
+    music.loop = true;
+    music.volume = 1;
+    music.play()
+    music.fadeIn(2000);
+    
+    jumpSound = this.game.add.audio('jump');
+    keySound = this.game.add.audio('key');
+    deadSound = this.game.add.audio('dead');
+    raySound = this.game.add.audio('ray');
+    runSound = this.game.add.audio('run');
+    doorSound = this.game.add.audio('door');
+    alertSound = this.game.add.audio('alert');
+    heroLandingSound = this.game.add.audio('landing');
+    landingCounter = 0;
+
+    
 
 
     //  les controles du jeu
@@ -233,15 +256,19 @@ level.update = function () {
     //si le joueur touche au rectacle exitRect, demarre le prochain niveau
     if (gotKey == true) {
         this.exitRect.x = exit.x;
+        
         var removeDoor = this.game.add.tween(door).to({
             alpha:0
         },1000,"Sine.easeInOut",true,0);
+        
         //this.exitRect.y = exit.y;
     } else {
         this.exitRect.x = -40;
     }
     if (Phaser.Rectangle.containsPoint(this.exitRect, player.position)) {
         gotKey = false;
+        doorSound.play();
+        music.fadeOut(1000);
         var disappear = this.game.add.tween(player).to({
             alpha: 0
         }, 1000, "Sine.easeInOut", true, 0);
@@ -260,12 +287,17 @@ level.update = function () {
 level.changeLevel = function () {
 
     this.game.global.levelID = currentLevel + 1;
-    this.game.state.start("level");
-
+    
+    
+    if (currentLevel == 3){
+        this.game.state.start("mainMenu")        
+    }else{
+        this.game.state.start("level");
+    }
 }
 
 level.showTutorialText = function () {
-    helpText = this.game.add.text(160, 40, levelText, {
+    helpText = this.game.add.text(160,40, levelText, {
         font: '11px pixelSmall',
         fill: '#0000',
         align: 'left'
@@ -307,6 +339,9 @@ level.movePlayer = function () {
 
     //bouge le joueur a gauche et l'anime
     if (cursors.left.isDown || this.moveLeft || this.wasd.left.isDown) {
+        if(player.body.onFloor()){
+            runSound.play(null,null,1,false,false);
+        }
         player.scale.x = -playerScale;
         player.body.velocity.x = -80;
         player.animations.play('right');
@@ -315,7 +350,9 @@ level.movePlayer = function () {
         };
         //bouge le joueur a droite et l'anime
     } else if (cursors.right.isDown || this.moveRight || this.wasd.right.isDown) {
-
+        if(player.body.onFloor()){
+            runSound.play(null,null,1,false,false);
+        }
         player.scale.x = playerScale;
         player.body.velocity.x = 80;
         player.animations.play('left');
@@ -324,10 +361,18 @@ level.movePlayer = function () {
         };
         //si le heroLanding est activé et que le joueur touche au sol, débloque une animation additonelle
     } else if (heroLanding == true && player.body.onFloor()) {
+
         player.frame = 4;
+        if(landingCounter < 2){
+            heroLandingSound.play(null,null,3,false,false);
+            landingCounter++;
+        }
+        
         this.game.time.events.add(Phaser.Timer.SECOND * 0.6, function () {
             heroLanding = false;
+            landingCounter=0;
         });
+         
         //si aucun bouton n'est pressé le joueur est debout face camera  
     } else {
         //  Stand still
@@ -363,8 +408,10 @@ level.moveEnemy = function () {
 
     enemyTween.start();
 }
-level.takeKey = function (player, coin) {
+level.takeKey = function (player, key) {
 
+        //joue le son
+        keySound.play();
 
         // redimensionne la key pour la rendre invisible
         key.scale.setTo(0, 0);
@@ -404,6 +451,7 @@ level.takeKey = function (player, coin) {
         if (intersect) {
             // un mur bloque la vision de l'ennmi donc l'ennmi affiche une couleur par defaut
             enemy.tint = 0xffffff;
+            
             if (enemyTween._codePaused == true) {
                 restartTweenTimer.start();
             }
@@ -411,7 +459,7 @@ level.takeKey = function (player, coin) {
             deathTimer.stop(false);
         } else {
             // l'ennemi peut voir le joueur donc sa couleur change
-
+            
             enemy.tint = 0xffaaaa;
             enemyTween.pause();
             playerVisible = true;
@@ -422,6 +470,7 @@ level.takeKey = function (player, coin) {
 
                 hourGlassVariable++;
                 if (hourGlassVariable == 1) {
+                    alertSound.play();
                     this.game.camera.flash(0xff0000, 300);
                 }
             }
@@ -441,10 +490,11 @@ level.restartEnemyMovement = function () {
 }
 
 level.fireDeathRay = function () {
-
+    raySound.play();
     deathTimer.stop(false);
     laser.visible = true;
     hasFired = true;
+    music.fadeOut(1000);
 
 }
 
@@ -692,6 +742,7 @@ level.getWallIntersection = function (ray) {
 
 level.collisionHandler = function () {
     player.kill();
+    deadSound.play();
     laser.visible = false;
 
     //  Position the emitter where the mouse/touch event was
@@ -703,7 +754,8 @@ level.collisionHandler = function () {
     //  The third is ignored when using burst/explode mode
     //  The final parameter (10) is how many particles will be emitted in this single burst
 
-    emitter.start(true, 2000, null, 50);
+    emitter.start(true, 2500, null, 50);
+    
     gameOverTimer = this.game.time.create();
     gameOverTimer.add(2500, this.gameOver, this);
     gameOverTimer.start();
@@ -713,6 +765,7 @@ level.collisionHandler = function () {
 
 //fonction qui effectue le saut du joueur
 level.jump = function () {
+    jumpSound.play(null,null,0.2);
     player.body.velocity.y = -150;
     jumpCount++;
 }
@@ -785,6 +838,8 @@ level.setRightFalse = function () {
 
 //redemarre le jeu
 level.gameOver = function () {
+
+    music.stop();
     this.game.state.start("gameOver");
 }
 

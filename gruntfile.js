@@ -87,6 +87,14 @@ module.exports = function (grunt) {
       audio:{
         files: 'src/audio/**/*',
         tasks: ['copy:audio']
+      },
+      fonts:{
+        files: 'src/fonts/**/*',
+        tasks: ['copy:fonts']
+      },
+      levels:{
+        files: 'src/levels/**/*',
+        tasks: ['copy:levels']
       }
     },
 
@@ -163,6 +171,12 @@ module.exports = function (grunt) {
       audio: {
         files: [ { expand: true, cwd: 'src/audio/', src: ['**'], dest: 'build/audio/' } ]
       },
+      levels: {
+        files: [ { expand: true, cwd: 'src/levels/', src: ['**'], dest: 'build/levels/' } ]
+      },
+      fonts: {
+        files: [ { expand: true, cwd: 'src/fonts/', src: ['**'], dest: 'build/fonts/' } ]
+      },
       phaserArcade: {
         files: [ {
           src: ['node_modules/phaser/build/custom/phaser-arcade-physics.js'],
@@ -172,18 +186,6 @@ module.exports = function (grunt) {
       phaserArcadeMin: {
         files: [ {
           src: ['node_modules/phaser/build/custom/phaser-arcade-physics.min.js'],
-          dest: 'build/js/phaser.js'
-        } ]
-      },
-      phaserP2: {
-        files: [ {
-          src: ['node_modules/phaser/build/phaser.js'],
-          dest: 'build/js/phaser.js'
-        } ]
-      },
-      phaserP2Min: {
-        files: [ {
-          src: ['node_modules/phaser/build/phaser.min.js'],
           dest: 'build/js/phaser.js'
         } ]
       }
@@ -211,9 +213,10 @@ module.exports = function (grunt) {
     'jade',
     'stylus',
     'copy:images',
+    'copy:fonts',
+    'copy:levels',
     'copy:audio',
     'copy:phaserArcade',
-    'copy:phaserP2',
     'connect',
     'open',
     'watch'
@@ -227,9 +230,10 @@ module.exports = function (grunt) {
     'stylus',
     'uglify',
     'copy:images',
+    'copy:fonts',
+    'copy:levels',
     'copy:audio',
     'copy:phaserArcadeMin',
-    'copy:phaserP2Min',
     //'cacheBust',
     'connect',
     'open',

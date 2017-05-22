@@ -54,7 +54,7 @@ tutorial.create = function () {
     //affiche le nom du jeu
     var returnMainTitle = this.game.add.text(this.game.width/2, text3.y+30, 'Retourner au Menu Principal', {
         font: '13px smallest',
-        fill: '#fff',
+        fill: '#000',
         align: 'center'
     });
     returnMainTitle.anchor.setTo(0.5,0.5);
@@ -63,20 +63,25 @@ tutorial.create = function () {
     returnMainTitle.events.onInputOut.add(this.mouseOut, returnMainTitle);
     returnMainTitle.events.onInputDown.add(this.returnToMainTitle, this);
 
+    menuMusic = this.game.add.audio('mainMenu'); // add the music
+    menuMusic.loop = true; //make it loop
+    menuMusic.play(); //start the music
+
 };
 
 tutorial.returnToMainTitle = function(){
     this.game.state.start('mainMenu');
+    menuMusic.stop(); //start the music
 }
 
 tutorial.mouseOver = function (textLabel) {
-    textLabel.fill = "#ffff44";
+    textLabel.fill = "#565656";
     this.game.canvas.style.cursor = 'pointer';
 }
 
 
 tutorial.mouseOut = function (textLabel) {
-    textLabel.fill = "#ffffff";
+    textLabel.fill = "#000";
     this.game.canvas.style.cursor = 'inherit';
 }
 

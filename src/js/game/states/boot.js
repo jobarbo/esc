@@ -12,7 +12,7 @@ boot.init = function () {
 
 boot.preload = function() {
   //chargement de l'image pour la barre de chargement
-  this.game.load.image('progressBar','images/progressBar.png')
+  this.game.load.image('progressBar','images/laser.png')
 }
 
 boot.create = function () {
@@ -29,7 +29,7 @@ boot.create = function () {
   this.game.renderer.renderSession.roundPixels = true;
 
   //ajoute une couleur a la page pour cacher les espace blanc
-  document.body.style.backgroundColor = '#142A53';
+  document.body.style.backgroundColor = '#000000';
 
   if(!this.game.device.desktop) {
 
