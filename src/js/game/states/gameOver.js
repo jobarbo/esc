@@ -1,4 +1,5 @@
 var gameOver = {};
+var muteButton;
 
 gameOver.create = function () {
     //this.game.add.image(0, 0, 'color_bg');
@@ -33,13 +34,34 @@ gameOver.create = function () {
     returnMenuLabel.events.onInputOut.add(this.mouseOut, returnMenuLabel);
     returnMenuLabel.events.onInputDown.add(this.restartGame, this);
 
-
     //ajout du bouton qui fait appel a la fonction toggleSound
-    this.muteButton = this.game.add.button(20, 20, 'mute', this.toggleSound, this);
+    muteButton = this.game.add.text(20, 20, 'mute', {
+        font: '13px smallest',
+        fill: '#000',
+        align: 'center'
+    });
+    muteButton.id = 'mute';
+    muteButton.inputEnabled = true;
+    muteButton.events.onInputOver.add(this.mouseOver, muteButton);
+    muteButton.events.onInputOut.add(this.mouseOut, muteButton);
 
-    //si le jeu est deja sans son, afficher le speaker mute
-    this.muteButton.frame = this.game.sound.mute ? 1 : 0;
+    this.game.physics.arcade.enable(muteButton);
+    muteButton.events.onInputDown.add(this.toggleSound, this);
     
+    // Best score
+    if (!localStorage.getItem('niveau')) {
+        // Then set the best score to 0
+        localStorage.setItem('niveau', 0);
+    }
+    if (this.game.global.levelID > localStorage.getItem('niveau')) {
+        localStorage.setItem('niveau', this.game.global.levelID);
+    }
+
+    if (this.game.sound.mute) {
+        //change le frame du button
+        muteButton.text = 'unmute';
+    }
+
 
     if (!this.game.device.desktop) {
         this.game.input.onDown.add(this.restartGame, this);
@@ -48,7 +70,7 @@ gameOver.create = function () {
 gameOver.restartGame = function () {
     gameOverMusic.stop();
     this.game.state.start('mainMenu');
-    
+
 }
 
 gameOver.mouseOver = function (textLabel) {
@@ -67,8 +89,12 @@ gameOver.toggleSound = function () {
     //quand 'game.sound.mute = true', Phaser va muter le jeu
     this.game.sound.mute = !this.game.sound.mute;
 
-    //change le frame du button
-    this.muteButton.frame = this.game.sound.mute ? 1 : 0;
+    if (this.game.sound.mute) {
+        //change le frame du button
+        muteButton.text = 'unmute';
+    } else {
+        muteButton.text = 'mute';
+    }
 }
 
 
