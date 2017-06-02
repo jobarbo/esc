@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="15" height="12" tilewidth="21" tileheight="21" nextobjectid="20">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="15" height="12" tilewidth="21" tileheight="21" nextobjectid="28">
  <tileset firstgid="1" name="hints" tilewidth="70" tileheight="70" tilecount="0" columns="4">
   <image source="images/collision.png" width="280" height="70"/>
  </tileset>
@@ -56,7 +56,7 @@
  </layer>
  <layer name="platform" width="15" height="12">
   <data encoding="csv">
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+3221225809,3221225776,3221225776,3221225776,3221225776,3221225776,3221225776,3221225776,3221225776,3221225776,3221225776,3221225776,3221225776,3221225776,1610613073,
 2684354863,0,0,0,0,0,0,0,0,0,0,0,0,0,536871215,
 2684354864,0,0,0,0,0,0,0,0,0,0,0,0,0,1610613040,
 2684354864,0,0,0,0,825,825,825,0,0,0,0,0,0,1610613040,
@@ -95,6 +95,14 @@
   <object id="14" name="enemyEnd" x="210.333" y="38.3333" width="20" height="19.3333"/>
  </objectgroup>
  <objectgroup name="lightIntersect">
-  <object id="19" name="lightCol" x="105" y="84" width="63" height="21"/>
+  <object id="19" name="lightCol" x="21" y="126" width="84" height="21"/>
+  <object id="20" name="lightCol" x="210" y="105" width="84" height="21"/>
+  <object id="21" name="lightCol" x="105" y="63" width="63" height="21"/>
+  <object id="22" name="lightCol" x="0" y="21" width="21" height="105"/>
+  <object id="23" name="lightCol" x="21" y="231" width="278.25" height="21"/>
+  <object id="24" name="lightCol" x="294" y="21" width="21" height="84"/>
+  <object id="25" name="lightCol" x="21" y="0" width="273" height="21"/>
+  <object id="26" name="lightCol" x="0" y="147" width="21" height="84"/>
+  <object id="27" name="lightCol" x="294" y="126" width="21" height="105"/>
  </objectgroup>
 </map>
