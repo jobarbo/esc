@@ -6,9 +6,9 @@ var tileHits = [];
 level.create = function () {
     currentLevel = this.game.global.levelID;
     //configure la tilemap
-    map = this.game.add.tilemap('test');
-    levelText = 'Appuyez sur la touche GAUCHE/DROITE pour naviguer\nVous devez prendre la clef pour ouvrir la porte';
-    /*if (currentLevel == 0) {
+    //map = this.game.add.tilemap('test');
+    //levelText = 'Appuyez sur la touche GAUCHE/DROITE pour naviguer\nVous devez prendre la clef pour ouvrir la porte';
+    if (currentLevel == 0) {
         map = this.game.add.tilemap('niveau1');
         levelText = 'Appuyez sur la touche GAUCHE/DROITE pour naviguer\nVous devez prendre la clef pour ouvrir la porte';
     }
@@ -23,7 +23,7 @@ level.create = function () {
     if (currentLevel == 3) {
         map = this.game.add.tilemap('niveau4');
         //levelText = 'Ne vous faites pas voir pas les rayon du sentinel';
-    }*/
+    }
    
 
     map.addTilesetImage('pixel', 'pixel');
@@ -36,7 +36,7 @@ level.create = function () {
     mapIntersectNameArray = [];
     mapIntersectBasicArray = map.objects.lightIntersect;
     mapIntersectBasicArray.forEach(function (mapIntersectBasicArray) {
-        mapIntersectNameArray.push(mapIntersectBasicArray.name);
+        mapIntersectNameArray.push(mapIntersectBasicArray);
     });
 
     console.log(mapIntersectNameArray.length);
@@ -143,6 +143,8 @@ level.create = function () {
     this.rayBitmapImage = this.game.add.image(0, 0, this.rayBitmap);
     this.rayBitmapImage.visible = false;
 
+    // Setup function for hiding or showing rays
+    //this.game.input.onTap.add(this.toggleRays, this);
 
     collisionLayer.visible = false;
     collisionLayer.debug = false;
@@ -157,21 +159,19 @@ level.create = function () {
     collisionData = collisionLayer.layer.data;
     collisionChildData = [];
 
-    for (i = 0; i < collisionData.length; i++) {
+    /*for (i = 0; i < collisionData.length; i++) {
         for (z = 0; z < collisionData[i].length; z++) {
             if (collisionData[i][z].canCollide) {
                 collisionChildData.push(collisionData[i][z]);
             }
         }
+    }*/
+
+    for (i = 0; i < mapIntersectNameArray.length; i++) { 
+        collisionChildData.push(mapIntersectNameArray[i]);
     }
 
-    for (i = 0; i < collisionData.length; i++) {
-        for (z = 0; z < collisionData[i].length; z++) {
-            if (collisionData[i][z].canCollide) {
-                collisionChildData.push(collisionData[i][z]);
-            }
-        }
-    }
+    console.log(collisionChildData);
 
 
     //Configure le compteur de saut pour créé un doule saut
@@ -207,7 +207,7 @@ level.create = function () {
     restartTweenTimer.loop(2000, this.restartEnemyMovement, this).autoDestroy = true;
 
     rayCastTimer = this.game.time.create();
-    rayCastTimer.loop(70, this.enableRaycasting, this);
+    rayCastTimer.loop(15, this.enableRaycasting, this);
     rayCastTimer.start();
 
     tutorialTextTimer = this.game.time.create();
@@ -339,6 +339,14 @@ level.showTutorialText = function () {
 
 
 }
+level.toggleRays = function() {
+    // Toggle the visibility of the rays when the pointer is clicked
+    if (this.rayBitmapImage.visible) {
+        this.rayBitmapImage.visible = false;
+    } else {
+        this.rayBitmapImage.visible = true;
+    }
+};
 
 
 //fonction qui s'occupe de l'animation du joueur
@@ -551,17 +559,17 @@ level.enableRaycasting = function () {
         // ce tableau definis les points ce trouvant a l'interieur de chaque coin pour avoir une surface de contact plus sur
         // cela defini aussi les points a l'exterieur des coin, de cette facon l'ombre contourne les coins
         var corners = [
-            new Phaser.Point(collisionChildData.worldX + 0.1, collisionChildData.worldY + 0.1),
-            new Phaser.Point(collisionChildData.worldX - 0.1, collisionChildData.worldY - 0.1),
+            new Phaser.Point(collisionChildData.x + 0.1, collisionChildData.y + 0.1),
+            new Phaser.Point(collisionChildData.x - 0.1, collisionChildData.y - 0.1),
 
-            new Phaser.Point(collisionChildData.worldX - 0.1 + collisionChildData.width, collisionChildData.worldY + 0.1),
-            new Phaser.Point(collisionChildData.worldX + 0.1 + collisionChildData.width, collisionChildData.worldY - 0.1),
+            new Phaser.Point(collisionChildData.x - 0.1 + collisionChildData.width, collisionChildData.y + 0.1),
+            new Phaser.Point(collisionChildData.x + 0.1 + collisionChildData.width, collisionChildData.y - 0.1),
 
-            new Phaser.Point(collisionChildData.worldX - 0.1 + collisionChildData.width, collisionChildData.worldY - 0.1 + collisionChildData.height),
-            new Phaser.Point(collisionChildData.worldX + 0.1 + collisionChildData.width, collisionChildData.worldY + 0.1 + collisionChildData.height),
+            new Phaser.Point(collisionChildData.x - 0.1 + collisionChildData.width, collisionChildData.y - 0.1 + collisionChildData.height),
+            new Phaser.Point(collisionChildData.x + 0.1 + collisionChildData.width, collisionChildData.y + 0.1 + collisionChildData.height),
 
-            new Phaser.Point(collisionChildData.worldX + 0.1, collisionChildData.worldY - 0.1 + collisionChildData.height),
-            new Phaser.Point(collisionChildData.worldX - 0.1, collisionChildData.worldY + 0.1 + collisionChildData.height)
+            new Phaser.Point(collisionChildData.x + 0.1, collisionChildData.y - 0.1 + collisionChildData.height),
+            new Phaser.Point(collisionChildData.x - 0.1, collisionChildData.y + 0.1 + collisionChildData.height)
         ];
 
         // calculation des rayon vers chaque point generer dans la scene
@@ -736,12 +744,12 @@ level.getWallIntersection = function (ray) {
         // 
         // cree un tableau de ligne qui représente les quatre coin de ce mur
         var lines = [
-            new Phaser.Line(collisionChildData.worldX, collisionChildData.worldY, collisionChildData.worldX + collisionChildData.width, collisionChildData.worldY),
-            new Phaser.Line(collisionChildData.worldX, collisionChildData.worldY, collisionChildData.worldX, collisionChildData.worldY + collisionChildData.height),
-            new Phaser.Line(collisionChildData.worldX + collisionChildData.width, collisionChildData.worldY,
-                collisionChildData.worldX + collisionChildData.width, collisionChildData.worldY + collisionChildData.height),
-            new Phaser.Line(collisionChildData.worldX, collisionChildData.worldY + collisionChildData.height,
-                collisionChildData.worldX + collisionChildData.width, collisionChildData.worldY + collisionChildData.height)
+            new Phaser.Line(collisionChildData.x, collisionChildData.y, collisionChildData.x + collisionChildData.width, collisionChildData.y),
+            new Phaser.Line(collisionChildData.x, collisionChildData.y, collisionChildData.x, collisionChildData.y + collisionChildData.height),
+            new Phaser.Line(collisionChildData.x + collisionChildData.width, collisionChildData.y,
+                collisionChildData.x + collisionChildData.width, collisionChildData.y + collisionChildData.height),
+            new Phaser.Line(collisionChildData.x, collisionChildData.y + collisionChildData.height,
+                collisionChildData.x + collisionChildData.width, collisionChildData.y + collisionChildData.height)
         ];
         // Teste chacun des coté du mur contre le rayon
         // Si le rayon entre en contact avec les coin alors le mur est dans le chemin de la lumiere
