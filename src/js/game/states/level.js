@@ -6,7 +6,9 @@ var tileHits = [];
 level.create = function () {
     currentLevel = this.game.global.levelID;
     //configure la tilemap
-    if (currentLevel == 0) {
+    map = this.game.add.tilemap('test');
+    levelText = 'Appuyez sur la touche GAUCHE/DROITE pour naviguer\nVous devez prendre la clef pour ouvrir la porte';
+    /*if (currentLevel == 0) {
         map = this.game.add.tilemap('niveau1');
         levelText = 'Appuyez sur la touche GAUCHE/DROITE pour naviguer\nVous devez prendre la clef pour ouvrir la porte';
     }
@@ -21,7 +23,7 @@ level.create = function () {
     if (currentLevel == 3) {
         map = this.game.add.tilemap('niveau4');
         //levelText = 'Ne vous faites pas voir pas les rayon du sentinel';
-    }
+    }*/
    
 
     map.addTilesetImage('pixel', 'pixel');
@@ -30,6 +32,14 @@ level.create = function () {
     falseCollisionLayer = map.createLayer('platform');
     collisionLayer = map.createLayer('platform');
     interactiveLayer = map.createLayer('interactive');
+
+    mapIntersectNameArray = [];
+    mapIntersectBasicArray = map.objects.lightIntersect;
+    mapIntersectBasicArray.forEach(function (mapIntersectBasicArray) {
+        mapIntersectNameArray.push(mapIntersectBasicArray.name);
+    });
+
+    console.log(mapIntersectNameArray.length);
 
     mapObjectNameArray = [];
     mapObjectBasicArray = map.objects.evenement;
@@ -155,6 +165,14 @@ level.create = function () {
         }
     }
 
+    for (i = 0; i < collisionData.length; i++) {
+        for (z = 0; z < collisionData[i].length; z++) {
+            if (collisionData[i][z].canCollide) {
+                collisionChildData.push(collisionData[i][z]);
+            }
+        }
+    }
+
 
     //Configure le compteur de saut pour créé un doule saut
     jumpCount = 0;
@@ -189,7 +207,7 @@ level.create = function () {
     restartTweenTimer.loop(2000, this.restartEnemyMovement, this).autoDestroy = true;
 
     rayCastTimer = this.game.time.create();
-    rayCastTimer.loop(35, this.enableRaycasting, this);
+    rayCastTimer.loop(70, this.enableRaycasting, this);
     rayCastTimer.start();
 
     tutorialTextTimer = this.game.time.create();

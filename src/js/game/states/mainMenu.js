@@ -94,7 +94,6 @@ mainMenu.create = function () {
     if (this.game.global.levelID > localStorage.getItem('niveau')) {
         localStorage.setItem('niveau', this.game.global.levelID);
     }
-     console.log(localStorage);
 
     if (!this.game.device.desktop) {
         //text explicatif sur comment debuter le jeu
