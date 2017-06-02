@@ -144,7 +144,7 @@ level.create = function () {
     this.rayBitmapImage.visible = false;
 
     // Setup function for hiding or showing rays
-    this.game.input.onTap.add(this.toggleRays, this);
+    //this.game.input.onTap.add(this.toggleRays, this);
 
     collisionLayer.visible = false;
     collisionLayer.debug = false;
