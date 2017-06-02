@@ -6,9 +6,9 @@ var tileHits = [];
 level.create = function () {
     currentLevel = this.game.global.levelID;
     //configure la tilemap
-    map = this.game.add.tilemap('test');
-    levelText = 'Appuyez sur la touche GAUCHE/DROITE pour naviguer\nVous devez prendre la clef pour ouvrir la porte';
-    /*if (currentLevel == 0) {
+    //map = this.game.add.tilemap('test');
+    //levelText = 'Appuyez sur la touche GAUCHE/DROITE pour naviguer\nVous devez prendre la clef pour ouvrir la porte';
+    if (currentLevel == 0) {
         map = this.game.add.tilemap('niveau1');
         levelText = 'Appuyez sur la touche GAUCHE/DROITE pour naviguer\nVous devez prendre la clef pour ouvrir la porte';
     }
@@ -23,7 +23,7 @@ level.create = function () {
     if (currentLevel == 3) {
         map = this.game.add.tilemap('niveau4');
         //levelText = 'Ne vous faites pas voir pas les rayon du sentinel';
-    }*/
+    }
    
 
     map.addTilesetImage('pixel', 'pixel');
@@ -207,7 +207,7 @@ level.create = function () {
     restartTweenTimer.loop(2000, this.restartEnemyMovement, this).autoDestroy = true;
 
     rayCastTimer = this.game.time.create();
-    rayCastTimer.loop(10, this.enableRaycasting, this);
+    rayCastTimer.loop(15, this.enableRaycasting, this);
     rayCastTimer.start();
 
     tutorialTextTimer = this.game.time.create();

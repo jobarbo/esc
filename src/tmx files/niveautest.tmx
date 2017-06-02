@@ -1,12 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.0" orientation="orthogonal" renderorder="right-down" width="15" height="12" tilewidth="21" tileheight="21" nextobjectid="28">
- <tileset firstgid="1" name="hints" tilewidth="70" tileheight="70" tilecount="0" columns="4">
-  <image source="images/collision.png" width="280" height="70"/>
- </tileset>
  <tileset firstgid="1" name="pixel" tilewidth="21" tileheight="21" spacing="2" margin="2" tilecount="900" columns="30">
   <image source="../images/pixel.png" width="692" height="692"/>
  </tileset>
- <layer name="farground" width="15" height="12">
+ <layer name="farground" width="15" height="12" visible="0">
   <data encoding="csv">
 725,725,725,696,724,725,725,725,725,726,694,725,725,725,726,
 0,695,695,696,694,695,695,695,695,696,694,695,695,695,0,
@@ -22,7 +19,7 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 </data>
  </layer>
- <layer name="background" width="15" height="12">
+ <layer name="background" width="15" height="12" visible="0">
   <data encoding="csv">
 2684354867,0,0,0,0,0,0,0,0,0,0,0,0,0,307,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -38,7 +35,7 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 </data>
  </layer>
- <layer name="interactive" width="15" height="12">
+ <layer name="interactive" width="15" height="12" visible="0">
   <data encoding="csv">
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -70,7 +67,7 @@
 2684354897,304,304,304,304,304,304,304,304,304,304,304,304,304,337
 </data>
  </layer>
- <layer name="foreground" width="15" height="12">
+ <layer name="foreground" width="15" height="12" visible="0">
   <data encoding="csv">
 0,0,0,0,0,349,0,349,0,0,0,0,0,0,0,
 0,0,0,0,0,347,0,347,0,0,0,0,0,0,0,
