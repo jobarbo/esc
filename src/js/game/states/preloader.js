@@ -39,6 +39,7 @@ preloader.preload = function () {
 
   //preload all tilemap
   this.game.load.tilemap('tutorial', 'levels/tutorial.json', null, Phaser.Tilemap.TILED_JSON);
+  this.game.load.tilemap('test','levels/niveautest.json',null, Phaser.Tilemap.TILED_JSON);
   this.game.load.tilemap('niveau1', 'levels/niveau1.json', null, Phaser.Tilemap.TILED_JSON);
   this.game.load.tilemap('niveau2', 'levels/niveau2.json', null, Phaser.Tilemap.TILED_JSON);
   this.game.load.tilemap('niveau3', 'levels/niveau3.json', null, Phaser.Tilemap.TILED_JSON);
