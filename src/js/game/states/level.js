@@ -39,8 +39,6 @@ level.create = function () {
         mapIntersectNameArray.push(mapIntersectBasicArray);
     });
 
-    console.log(mapIntersectNameArray.length);
-
     mapObjectNameArray = [];
     mapObjectBasicArray = map.objects.evenement;
     mapObjectBasicArray.forEach(function (mapObjectBasicArray) {
@@ -170,8 +168,6 @@ level.create = function () {
     for (i = 0; i < mapIntersectNameArray.length; i++) { 
         collisionChildData.push(mapIntersectNameArray[i]);
     }
-
-    console.log(collisionChildData);
 
 
     //Configure le compteur de saut pour créé un doule saut
