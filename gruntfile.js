@@ -8,7 +8,7 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks('grunt-contrib-compress');
   grunt.loadNpmTasks('grunt-contrib-connect');
   grunt.loadNpmTasks('grunt-contrib-copy');
-  grunt.loadNpmTasks('grunt-contrib-jade');
+  grunt.loadNpmTasks('grunt-contrib-pug');
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-stylus');
   grunt.loadNpmTasks('grunt-contrib-uglify');
@@ -70,11 +70,11 @@ module.exports = function (grunt) {
       },
       js: {
         files: '<%= project.dest %>/**/*.js',
-        tasks: ['jade']
+        tasks: ['pug']
       },
-      jade: {
-        files: 'src/templates/*.jade',
-        tasks: ['jade']
+      pug: {
+        files: 'src/templates/*.pug',
+        tasks: ['pug']
       },
       stylus: {
         files: 'src/style/*.styl',
@@ -130,7 +130,7 @@ module.exports = function (grunt) {
       }
     },
 
-    jade: {
+    pug: {
       compile: {
         options: {
           data: {
@@ -139,7 +139,7 @@ module.exports = function (grunt) {
           }
         },
         files: {
-          'build/index.html': ['src/templates/index.jade']
+          'build/index.html': ['src/templates/index.pug']
         }
       }
     },
@@ -179,13 +179,13 @@ module.exports = function (grunt) {
       },
       phaserArcade: {
         files: [ {
-          src: ['node_modules/phaser/build/custom/phaser-arcade-physics.js'],
+          src: ['node_modules/phaser-ce/build/custom/phaser-arcade-physics.js'],
           dest: 'build/js/phaser.js'
         } ]
       },
       phaserArcadeMin: {
         files: [ {
-          src: ['node_modules/phaser/build/custom/phaser-arcade-physics.min.js'],
+          src: ['node_modules/phaser-ce/build/custom/phaser-arcade-physics.min.js'],
           dest: 'build/js/phaser.js'
         } ]
       }
@@ -210,7 +210,7 @@ module.exports = function (grunt) {
   grunt.registerTask('default', [
     'clean',
     'browserify',
-    'jade',
+    'pug',
     'stylus',
     'copy:images',
     'copy:fonts',
@@ -226,7 +226,7 @@ module.exports = function (grunt) {
     /*'jshint',
     */'clean',
     'browserify',
-    'jade',
+    'pug',
     'stylus',
     'uglify',
     'copy:images',
