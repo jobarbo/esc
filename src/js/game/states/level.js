@@ -170,7 +170,6 @@ level.create = function () {
     }
 
 
-
     //Configure le compteur de saut pour créé un doule saut
     jumpCount = 0;
     jumpkey = this.game.input.keyboard.addKey(Phaser.Keyboard.UP);
