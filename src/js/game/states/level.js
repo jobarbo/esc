@@ -3,7 +3,7 @@ var currentLevel;
 var map, keySound, music, jumpSound, deadSound, runSound, doorSound, collisionLayer, player, key, door, gotKey, emitter, particles, cursors, hourGlassVariable, laser, rayCastTimer, jumpCount, jumpkey, theGame, playerScale, levelText, helpTextTween, helpText, heroLanding, raycasting, mapObjectNameArray, hitPlatform, enemyTween, hasFired, playerVisible, lightBitmap;
 var ray;
 var tileHits = [];
-level.create = function () {
+level.create = function() {
     currentLevel = this.game.global.levelID;
     //configure la tilemap
     //map = this.game.add.tilemap('test');
@@ -24,7 +24,7 @@ level.create = function () {
         map = this.game.add.tilemap('niveau4');
         //levelText = 'Ne vous faites pas voir pas les rayon du sentinel';
     }
-   
+
 
     map.addTilesetImage('pixel', 'pixel');
     fargroundLayer = map.createLayer('farground');
@@ -35,40 +35,40 @@ level.create = function () {
 
     mapIntersectNameArray = [];
     mapIntersectBasicArray = map.objects.lightIntersect;
-    mapIntersectBasicArray.forEach(function (mapIntersectBasicArray) {
+    mapIntersectBasicArray.forEach(function(mapIntersectBasicArray) {
         mapIntersectNameArray.push(mapIntersectBasicArray);
     });
 
     mapObjectNameArray = [];
     mapObjectBasicArray = map.objects.evenement;
-    mapObjectBasicArray.forEach(function (mapObjectBasicArray) {
+    mapObjectBasicArray.forEach(function(mapObjectBasicArray) {
         mapObjectNameArray.push(mapObjectBasicArray.name);
     });
     // extraction des objet interactifs qui se trouve dans le tile map
     hourGlassVariable = 0;
     for (i = 0; i <= mapObjectNameArray.length; i++) {
         if (mapObjectNameArray[i] == 'begin') {
-            begin = map.objects.evenement[i]
+            begin = map.objects.evenement[i];
             this.beginRect = new Phaser.Rectangle(begin.x, begin.y, begin.width, begin.height);
         }
         if (mapObjectNameArray[i] == 'exit') {
-            exit = map.objects.evenement[i]
+            exit = map.objects.evenement[i];
             this.exitRect = new Phaser.Rectangle(exit.x, exit.y, exit.width, exit.height);
         }
         if (mapObjectNameArray[i] == 'enemyBegin') {
-            enemyBegin = map.objects.evenement[i]
+            enemyBegin = map.objects.evenement[i];
             this.enemyBeginRect = new Phaser.Rectangle(enemyBegin.x, enemyBegin.y, enemyBegin.width, enemyBegin.height);
         }
         if (mapObjectNameArray[i] == 'switch') {
-            keyPosition = map.objects.evenement[i]
+            keyPosition = map.objects.evenement[i];
             this.keyPositionRect = new Phaser.Rectangle(keyPosition.x, keyPosition.y, keyPosition.width, keyPosition.height);
         }
         if (mapObjectNameArray[i] == 'enemyStop1') {
-            enemyStop1 = map.objects.evenement[i]
+            enemyStop1 = map.objects.evenement[i];
             this.enemyStop1Rect = new Phaser.Rectangle(enemyStop1.x, enemyStop1.y, enemyStop1.width, enemyStop1.height);
         }
         if (mapObjectNameArray[i] == 'enemyEnd') {
-            enemyEnd = map.objects.evenement[i]
+            enemyEnd = map.objects.evenement[i];
             this.enemyEndRect = new Phaser.Rectangle(enemyEnd.x, enemyEnd.y, enemyEnd.width, enemyEnd.height);
         }
     }
@@ -82,7 +82,7 @@ level.create = function () {
 
     var appear = this.game.add.tween(player).to({
         alpha: 1
-    }, 1000, "Sine.easeInOut", true, 0);
+    }, 1000, 'Sine.easeInOut', true, 0);
     //appear.yoyo(true,50);
     //animation du personnage cycle de marche
     player.animations.add('left', [0, 1], 10, true);
@@ -165,7 +165,7 @@ level.create = function () {
         }
     }*/
 
-    for (i = 0; i < mapIntersectNameArray.length; i++) { 
+    for (i = 0; i < mapIntersectNameArray.length; i++) {
         collisionChildData.push(mapIntersectNameArray[i]);
     }
 
@@ -251,7 +251,7 @@ level.create = function () {
 
 }
 
-level.update = function () {
+level.update = function() {
 
     this.game.physics.arcade.overlap(laser, player, this.collisionHandler, null, this);
     // creation d'une variable qui contien false mais qui devien true lors de la collision entre le joueur et les plateforme
@@ -302,7 +302,7 @@ level.update = function () {
 }
 
 
-level.changeLevel = function () {
+level.changeLevel = function() {
 
     this.game.global.levelID = currentLevel + 1;
 
@@ -314,7 +314,7 @@ level.changeLevel = function () {
     }
 }
 
-level.showTutorialText = function () {
+level.showTutorialText = function() {
     helpText = this.game.add.text(160, 40, levelText, {
         font: '11px pixelSmall',
         fill: '#0000',
@@ -346,73 +346,73 @@ level.toggleRays = function() {
 
 
 //fonction qui s'occupe de l'animation du joueur
-level.movePlayer = function () {
-    //reconfigure la velocité du joueur a chaque itération de la function update(60fps)
-    player.body.velocity.x = 0;
+level.movePlayer = function() {
+        //reconfigure la velocité du joueur a chaque itération de la function update(60fps)
+        player.body.velocity.x = 0;
 
 
-    //si la vitesse de chute depasse 200, active le heroLanding
-    if (player.body.velocity.y >= 200) {
-        heroLanding = true;
-    }
+        //si la vitesse de chute depasse 200, active le heroLanding
+        if (player.body.velocity.y >= 200) {
+            heroLanding = true;
+        }
 
-    //si le corps du joueur touche au tuile et que l'on pese sur le touche de saut, démarre le processus de saut.
-    if (player.body.onFloor()) {
-        jumpkey.onDown.add(this.jumpCheck, this);
-        altJumpKey.onDown.add(this.jumpCheck, this);
-        spaceJumpKey.onDown.add(this.jumpCheck, this);
-    }
-
-    //bouge le joueur a gauche et l'anime
-    if (cursors.left.isDown || this.moveLeft || this.wasd.left.isDown) {
+        //si le corps du joueur touche au tuile et que l'on pese sur le touche de saut, démarre le processus de saut.
         if (player.body.onFloor()) {
-            runSound.play(null, null, 1, false, false);
+            jumpkey.onDown.add(this.jumpCheck, this);
+            altJumpKey.onDown.add(this.jumpCheck, this);
+            spaceJumpKey.onDown.add(this.jumpCheck, this);
         }
-        player.scale.x = -playerScale;
-        player.body.velocity.x = -80;
-        player.animations.play('right');
-        if (!hitPlatform) {
-            player.frame = 3;
-        };
-        //bouge le joueur a droite et l'anime
-    } else if (cursors.right.isDown || this.moveRight || this.wasd.right.isDown) {
+
+        //bouge le joueur a gauche et l'anime
+        if (cursors.left.isDown || this.moveLeft || this.wasd.left.isDown) {
+            if (player.body.onFloor()) {
+                runSound.play(null, null, 1, false, false);
+            }
+            player.scale.x = -playerScale;
+            player.body.velocity.x = -80;
+            player.animations.play('right');
+            if (!hitPlatform) {
+                player.frame = 3;
+            };
+            //bouge le joueur a droite et l'anime
+        } else if (cursors.right.isDown || this.moveRight || this.wasd.right.isDown) {
+            if (player.body.onFloor()) {
+                runSound.play(null, null, 1, false, false);
+            }
+            player.scale.x = playerScale;
+            player.body.velocity.x = 80;
+            player.animations.play('left');
+            if (!hitPlatform) {
+                player.frame = 3;
+            };
+            //si le heroLanding est activé et que le joueur touche au sol, débloque une animation additonelle
+        } else if (heroLanding == true && player.body.onFloor()) {
+
+            player.frame = 4;
+            if (landingCounter < 2) {
+                heroLandingSound.play(null, null, 3, false, false);
+                landingCounter++;
+            }
+
+            this.game.time.events.add(Phaser.Timer.SECOND * 0.6, function() {
+                heroLanding = false;
+                landingCounter = 0;
+            });
+
+            //si aucun bouton n'est pressé le joueur est debout face camera  
+        } else {
+            //  Stand still
+            player.animations.stop();
+            player.frame = 2;
+        }
+
+        //si le joueur touche au sol, reinitialise le compteur de saut a 0
         if (player.body.onFloor()) {
-            runSound.play(null, null, 1, false, false);
+            jumpCount = 0;
         }
-        player.scale.x = playerScale;
-        player.body.velocity.x = 80;
-        player.animations.play('left');
-        if (!hitPlatform) {
-            player.frame = 3;
-        };
-        //si le heroLanding est activé et que le joueur touche au sol, débloque une animation additonelle
-    } else if (heroLanding == true && player.body.onFloor()) {
-
-        player.frame = 4;
-        if (landingCounter < 2) {
-            heroLandingSound.play(null, null, 3, false, false);
-            landingCounter++;
-        }
-
-        this.game.time.events.add(Phaser.Timer.SECOND * 0.6, function () {
-            heroLanding = false;
-            landingCounter = 0;
-        });
-
-        //si aucun bouton n'est pressé le joueur est debout face camera  
-    } else {
-        //  Stand still
-        player.animations.stop();
-        player.frame = 2;
     }
-
-    //si le joueur touche au sol, reinitialise le compteur de saut a 0
-    if (player.body.onFloor()) {
-        jumpCount = 0;
-    }
-}
-//fonction qui s'occuppe de l'animation de l'ennemi
-level.moveEnemy = function () {
+    //fonction qui s'occuppe de l'animation de l'ennemi
+level.moveEnemy = function() {
 
     enemyTween = this.game.add.tween(enemy).to({
             x: this.enemyStop1Rect.x,
@@ -434,7 +434,7 @@ level.moveEnemy = function () {
 
     enemyTween.start();
 }
-level.takeKey = function (player, key) {
+level.takeKey = function(player, key) {
 
         //joue le son
         keySound.play();
@@ -470,7 +470,7 @@ level.takeKey = function (player, key) {
 
 
     // fonction qui s'occupe de créé un ligne qui vérifie si l'ennemie percois le joueur
-    level.lineOfSight = function () {
+    level.lineOfSight = function() {
         var ray = new Phaser.Line(enemy.x, enemy.y, player.x, player.y);
         // Vérifie si un mur bloque la vision entre l'ennemi et le joueur
         var intersect = this.getWallIntersection(ray);
@@ -505,7 +505,7 @@ level.takeKey = function (player, key) {
         this.bitmap.dirty = true;
     }
 
-level.restartEnemyMovement = function () {
+level.restartEnemyMovement = function() {
     enemyTween.resume();
     if (playerVisible == true && hasFired == true) {
         hasFired = true;
@@ -515,7 +515,7 @@ level.restartEnemyMovement = function () {
     }
 }
 
-level.fireDeathRay = function () {
+level.fireDeathRay = function() {
     raySound.play();
     deathTimer.stop(false);
     laser.visible = true;
@@ -525,7 +525,7 @@ level.fireDeathRay = function () {
 }
 
 //fonction qui active le affichage des rayon de lumiere
-level.enableRaycasting = function () {
+level.enableRaycasting = function() {
 
 
     // Next, fill the entire light bitmap with a dark shadow color.
@@ -550,7 +550,7 @@ level.enableRaycasting = function () {
     var intersect;
     var i;
     var corners;
-    collisionChildData.forEach(function (collisionChildData) {
+    collisionChildData.forEach(function(collisionChildData) {
         // creation d'un rayon a partir de l'enemie au travers de chanque coin de la scene
         // ce tableau definis les points ce trouvant a l'interieur de chaque coin pour avoir une surface de contact plus sur
         // cela defini aussi les points a l'exterieur des coin, de cette facon l'ombre contourne les coins
@@ -670,7 +670,7 @@ level.enableRaycasting = function () {
         x: enemy.x,
         y: enemy.y
     };
-    points = points.sort(function (a, b) {
+    points = points.sort(function(a, b) {
         if (a.x - center.x >= 0 && b.x - center.x < 0)
             return 1;
         if (a.x - center.x < 0 && b.x - center.x >= 0)
@@ -731,12 +731,12 @@ level.enableRaycasting = function () {
 
 
 // cette fonction itere dans tout les murs et retourn l'intersection la plus proche du point de depart du rayon
-level.getWallIntersection = function (ray) {
+level.getWallIntersection = function(ray) {
     var distanceToWall = Number.POSITIVE_INFINITY;
     var closestIntersection = null;
 
     // pour chacun des murs
-    collisionChildData.forEach(function (collisionChildData) {
+    collisionChildData.forEach(function(collisionChildData) {
         // 
         // cree un tableau de ligne qui représente les quatre coin de ce mur
         var lines = [
@@ -766,7 +766,7 @@ level.getWallIntersection = function (ray) {
     return closestIntersection;
 };
 
-level.collisionHandler = function () {
+level.collisionHandler = function() {
     player.kill();
     deadSound.play();
     laser.visible = false;
@@ -790,14 +790,14 @@ level.collisionHandler = function () {
 }
 
 //fonction qui effectue le saut du joueur
-level.jump = function () {
+level.jump = function() {
     jumpSound.play(null, null, 0.2);
     player.body.velocity.y = -150;
     jumpCount++;
 }
 
 //fonction qui a pour but de vérifier le nombre de saut restant avant de pouvoir retoucher au sol
-level.jumpCheck = function () {
+level.jumpCheck = function() {
     if (jumpCount == 0 && !player.body.onFloor()) {
         return;
     } else if (jumpCount < 2) {
@@ -807,69 +807,69 @@ level.jumpCheck = function () {
 
 
 //fonction qui change la direction du sprite du joueur dans le but de sauvé de l'espace
-level.flipPlayer = function () {
+level.flipPlayer = function() {
     player.scale.x *= -1;
 }
 
-level.addMobileInputs = function () {
-    //ajoute le bouton pour sauter
-    var jumpButton = this.game.add.sprite(this.game.width - 50, this.game.height - 50, 'jumpButton');
-    jumpButton.inputEnabled = true;
-    jumpButton.alpha = 0.5;
-    jumpButton.scale.setTo(0.5);
-    //appelle la fonction jumpPlayer quand le bouton pour saute est utiliser
-    jumpButton.events.onInputDown.add(this.jumpCheck, this);
+level.addMobileInputs = function() {
+        //ajoute le bouton pour sauter
+        var jumpButton = this.game.add.sprite(this.game.width - 50, this.game.height - 50, 'jumpButton');
+        jumpButton.inputEnabled = true;
+        jumpButton.alpha = 0.5;
+        jumpButton.scale.setTo(0.5);
+        //appelle la fonction jumpPlayer quand le bouton pour saute est utiliser
+        jumpButton.events.onInputDown.add(this.jumpCheck, this);
 
-    //les variables de mouvement
-    this.moveLeft = false;
-    this.moveRight = false;
+        //les variables de mouvement
+        this.moveLeft = false;
+        this.moveRight = false;
 
-    //ajoute le bouton pour allez a gauche
-    var leftButton = this.game.add.sprite(20, this.game.height - 50, 'leftButton');
-    leftButton.scale.setTo(0.5);
-    leftButton.inputEnabled = true;
-    leftButton.alpha = 0.5;
-    leftButton.events.onInputOver.add(this.setLeftTrue, this);
-    leftButton.events.onInputOut.add(this.setLeftFalse, this);
-    leftButton.events.onInputDown.add(this.setLeftTrue, this);
-    leftButton.events.onInputUp.add(this.setLeftFalse, this);
+        //ajoute le bouton pour allez a gauche
+        var leftButton = this.game.add.sprite(20, this.game.height - 50, 'leftButton');
+        leftButton.scale.setTo(0.5);
+        leftButton.inputEnabled = true;
+        leftButton.alpha = 0.5;
+        leftButton.events.onInputOver.add(this.setLeftTrue, this);
+        leftButton.events.onInputOut.add(this.setLeftFalse, this);
+        leftButton.events.onInputDown.add(this.setLeftTrue, this);
+        leftButton.events.onInputUp.add(this.setLeftFalse, this);
 
-    //ajoute le boutron pour allez a droite
-    var rightButton = this.game.add.sprite(80, this.game.height - 50, 'rightButton');
-    rightButton.inputEnabled = true;
-    rightButton.scale.setTo(0.5);
-    rightButton.alpha = 0.5;
-    rightButton.events.onInputOver.add(this.setRightTrue, this);
-    rightButton.events.onInputOut.add(this.setRightFalse, this);
-    rightButton.events.onInputDown.add(this.setRightTrue, this);
-    rightButton.events.onInputUp.add(this.setRightFalse, this);
-}
-//Basic functions that are used in our callbacks
+        //ajoute le boutron pour allez a droite
+        var rightButton = this.game.add.sprite(80, this.game.height - 50, 'rightButton');
+        rightButton.inputEnabled = true;
+        rightButton.scale.setTo(0.5);
+        rightButton.alpha = 0.5;
+        rightButton.events.onInputOver.add(this.setRightTrue, this);
+        rightButton.events.onInputOut.add(this.setRightFalse, this);
+        rightButton.events.onInputDown.add(this.setRightTrue, this);
+        rightButton.events.onInputUp.add(this.setRightFalse, this);
+    }
+    //Basic functions that are used in our callbacks
 
-level.setLeftTrue = function () {
+level.setLeftTrue = function() {
     this.moveLeft = true;
 }
 
-level.setLeftFalse = function () {
+level.setLeftFalse = function() {
     this.moveLeft = false;
 }
-level.setRightTrue = function () {
+level.setRightTrue = function() {
     this.moveRight = true;
 }
-level.setRightFalse = function () {
+level.setRightFalse = function() {
     this.moveRight = false;
 }
 
 
 
 //redemarre le jeu
-level.gameOver = function () {
+level.gameOver = function() {
 
     music.stop();
     this.game.state.start("gameOver");
 }
 
-level.render = function () {
+level.render = function() {
 
 }
 
